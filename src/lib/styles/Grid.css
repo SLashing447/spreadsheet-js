@@ -1,0 +1,117 @@
+.grid-container {
+  flex: 1;
+
+  /* display: grid;
+  gap: 1px; */
+  /* width: fit-content; */
+  /* width: 100%; */
+  /* flex: 1; */
+  /* height: 100%; */
+  /* border: 1px solid red; */
+  /* height: 100%; */
+  /* min-height: 0; */
+  /* overflow: hidden; */
+  display: flex;
+  /* justify-content: center; */
+  /* overflow: auto; */
+  /* width: 100vw; */
+  /* padding: 1rem; */
+
+  background-color: transparent;
+}
+.grid-container > main {
+  position: relative;
+  /* height: 100%; */
+  overflow: auto;
+  display: grid;
+
+  grid-auto-columns: max-content;
+  grid-auto-rows: minmax(38px, auto);
+
+  /* width: 80vw; */
+  /* width: 100%; */
+  /* overflow: auto; */
+  /* border: 1px solid lime; */
+  gap: 1px;
+  width: fit-content;
+}
+.cell > div {
+  min-height: 1em;
+}
+
+.cell {
+  background-color: var(--cell);
+  position: relative;
+  /* align-self: start; */
+  padding: 8px;
+  min-width: 80px;
+  min-height: 38px;
+  overflow-wrap: break-word; /* better word breaking */
+  outline: none;
+
+  white-space: pre-wrap; /* horizontal growth + preserve \n */
+  word-break: break-word;
+
+  height: auto !important; /* allow vertical growth */
+}
+.cell:hover,
+.idx:hover {
+  background-color: var(--cell-high);
+}
+.cell:focus,
+.idx:focus {
+  background-color: var(--cell-high);
+  box-shadow: inset 0 0 0 3px var(--cell-border);
+}
+
+/* column heads */
+
+.row-head {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  padding: 0 0.2rem;
+  /* width: ; */
+  /* border: 1px solid red; */
+  width: 30px;
+  margin-right: 0.4rem;
+}
+.col-head,
+.row-head {
+  user-select: none;
+  cursor: default;
+  color: grey;
+  opacity: 0.5;
+}
+.col-head {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  /* border: 1px solid red; */
+  /* padding: 0.2rem 0; */
+  height: fit-content;
+
+  margin-top: auto;
+  position: sticky;
+  left: 2px;
+  top: 2px;
+  z-index: 2;
+}
+.corner {
+  width: 30px;
+  color: grey;
+  /* border: 1px solid red; */
+  display: flex;
+  padding-top: 0.7rem;
+  /* justify-content: center;
+  align-items: center;
+  text-align: center; */
+  /* margin: auto; */
+  background-color: transparent;
+}
+
+.cell.sel {
+  background-color: var(--cell-high);
+  /* border-color: red; */
+}

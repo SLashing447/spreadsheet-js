@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>spreadsheet-js</title>
+    <link rel="stylesheet" href="./styles/global.css" />
+  </head>
+  <body>
+    <div id="print-container">
+      <div class="print-tool-bar">
+        <button id="p_print">Print</button>
+        <button id="p_back">Back</button>
+      </div>
+      <div class="print-custom-headers">
+        <div
+          role="textbox"
+          class="pch"
+          id="pch1"
+          contenteditable="true"
+          data-placeholder="Header 1"
+        ></div>
+        <div
+          role="textbox"
+          class="pch"
+          id="pch2"
+          contenteditable="true"
+          data-placeholder="Header 2"
+        ></div>
+        <div
+          role="textbox"
+          class="pch"
+          id="pch3"
+          contenteditable="true"
+          data-placeholder="Header 3"
+        ></div>
+      </div>
+    </div>
+    <input
+      type="file"
+      name="Upload Your File"
+      id="file"
+      multiple="false"
+      accept="*/*"
+    />
+    <div class="tool-bar no-print">
+      <div>
+        <div class="info">
+          <div id="filename" contenteditable="true" spellcheck="false">
+            untitled
+          </div>
+          <!-- <span class="div">&nbsp;</span> -->
+
+          <div id="ls-time">Jan 30 , 3pm</div>
+        </div>
+        <div class="controls">
+          <button id="lf">Load</button>
+          <button id="sf">Save</button>
+          <button id="prf">Print</button>
+          <button id="clr">Clear</button>
+          <!-- <span class="div">&nbsp;</span> -->
+          <button id="sel-rng">0-0 0-0</button>
+          <!-- <button></button> -->
+        </div>
+      </div>
+
+      <div>
+        <div class="info" id="info">Unsaved</div>
+        <div class="controls">
+          <button>Something</button>
+
+          <button id="wp-mem">Wipe Memory</button>
+
+          <!-- <button>Print</button> -->
+        </div>
+      </div>
+    </div>
+    <div class="grid-container no-print">
+      <main id="grid-container"></main>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+    <script>
+      // some utils
+      document.querySelectorAll(".pch").forEach((el) =>
+        el.addEventListener("input", () => {
+          if (el.textContent.trim() === "") el.textContent = "";
+        })
+      );
+    </script>
+  </body>
+</html>

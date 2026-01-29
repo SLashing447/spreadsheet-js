@@ -1,0 +1,152 @@
+/* Print Styles for A4 Paper */
+#print-container {
+  display: none;
+  padding: 1rem;
+
+  flex-direction: column;
+  align-items: center;
+}
+
+/* placeholder */
+.print-custom-headers > div:empty::before {
+  content: attr(data-placeholder);
+  color: black;
+
+  pointer-events: none;
+}
+
+/* fix weird <br> insertion */
+.print-custom-headers > div:focus:empty::before {
+  content: attr(data-placeholder);
+}
+
+.print-custom-headers,
+.print-tool-bar {
+  width: 100%;
+  display: flex;
+  border-radius: 5px;
+}
+.print-tool-bar {
+  gap: 0.4rem;
+  padding: 0.3rem 0;
+}
+.print-custom-headers {
+  align-items: center;
+  justify-content: space-between;
+  border: 2px solid var(--btn);
+
+  padding: 1rem;
+}
+.print-custom-headers > div:nth-child(3) {
+  text-align: right;
+}
+.print-custom-headers > div:nth-child(2) {
+  text-align: center;
+}
+
+.print-custom-headers > div {
+  max-width: auto;
+  outline: none !important;
+  color: black;
+  border-radius: 3px;
+  /* border: 1px solid red; */
+
+  font-weight: bold;
+  font-size: 1rem;
+  /* border: none !important; */
+  /* text-align: center; */
+  padding: 0.1rem 1rem;
+  background-color: transparent;
+}
+
+/* Landscape specific */
+/* Global or print stylesheet */
+@page {
+  /* size: A4 portrait; */
+  margin: 3mm;
+}
+
+@media print {
+  .print-custom-headers:has(div:empty) {
+    display: none;
+  }
+
+  .print-custom-headers {
+    padding: 0;
+    margin-bottom: 0.3rem;
+    border-radius: 3px;
+    padding: 0.5rem 0;
+  }
+
+  .print-tool-bar {
+    display: none;
+  }
+
+  /* Hide everything except the grid */
+  .no-print {
+    display: none !important;
+  }
+}
+
+.print-table {
+  margin-top: 0.2rem;
+  display: table !important;
+  width: 100%;
+  border-collapse: separate !important;
+  border-spacing: 0;
+  font-size: 12pt;
+  page-break-inside: auto;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  margin-bottom: 10rem;
+}
+
+.print-table thead {
+  display: table-header-group;
+}
+
+.print-table thead th {
+  background-color: var(--header);
+  text-align: center;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  font-weight: bold;
+  color: lightgray;
+
+  border: 1px solid var(--bg) !important;
+
+  padding: 4px 6px;
+
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  /* Preserve line breaks in headers */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  vertical-align: top;
+}
+
+.print-table tbody {
+  display: table-row-group;
+}
+
+.print-table tr {
+  page-break-inside: avoid;
+
+  page-break-after: auto;
+}
+
+.print-table td {
+  border: 1px solid var(--header) !important;
+  border-top: none !important;
+
+  padding: 3px 6px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  /* CRITICAL: Preserve line breaks and spaces */
+  white-space: pre-wrap !important;
+  word-wrap: break-word;
+  word-break: break-word;
+  vertical-align: top;
+}

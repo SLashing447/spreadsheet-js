@@ -2,17 +2,24 @@ import { decode, encode } from "@msgpack/msgpack";
 import { getDbItem, setDbItem } from "./db";
 import { sanitize } from "./extract";
 import { renderPrintTable } from "../lib/Print";
-import { generateGrid } from "../lib/Grid";
-import { setFileName, setHasDataFlag, setInfo, setLsTime } from "./values";
+import { ensureGridSize, generateGrid } from "../lib/Grid";
+import {
+  CONTAINER,
+  setFileName,
+  setHasDataFlag,
+  setInfo,
+  setLsTime,
+} from "./values";
+import { selectedArea } from "./keybindings";
 
-export function cellsToFillScreen(cellWidth = 80, cellHeight = 30) {
+export function cellsToFillScreen(cellWidth = 80, cellHeight = 38) {
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
 
   const col = Math.ceil(screenWidth / cellWidth);
   const row = Math.ceil(screenHeight / cellHeight);
 
-  return [row - 10, col - 1];
+  return [row, col];
 }
 
 export function cellsToFillContainer(
@@ -92,58 +99,86 @@ export function setPrintMode(on) {
 
 export async function exportAndDownloadFile() {
   // save grid first
-  await save_grid();
 
-  const headers = await getDbItem("headers");
-  const name = await getDbItem("name");
-  const _data = await getDbItem("data");
-  const time = await getDbItem("ls");
+  try {
+    await save_grid();
 
-  const data = {
-    name,
-    time,
-    headers: headers,
-    data: _data,
-  };
+    const headers = await getDbItem("headers");
+    const name = await getDbItem("name");
+    const _data = await getDbItem("data");
+    const time = await getDbItem("ls");
 
-  // 1. Serialize to bytes
-  const bytes = encode(data);
+    const data = {
+      type: "file",
+      name,
+      time,
+      headers: headers,
+      data: _data,
+    };
 
-  // 2. Create Blob from bytes
-  const blob = new Blob([bytes], { type: "application/octet-stream" });
+    // 1. Serialize to bytes
+    const bytes = encode(data);
+
+    // 2. Create Blob from bytes
+    const blob = new Blob([bytes], { type: "application/octet-stream" });
+
+    const result = await saveFile(blob, name);
+
+    if (result) {
+      console.log(`Saved to: ${result.path}`);
+    } else {
+      console.log("Save cancelled");
+    }
+  } catch (error) {
+    console.error("Save failed:", error);
+  }
 
   // 3. Create download URL
-  const url = URL.createObjectURL(blob);
+  // const url = URL.createObjectURL(blob);
 
-  // 4. Trigger download
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = name;
-  link.click();
+  // // 4. Trigger download
+  // const link = document.createElement("a");
+  // link.href = url;
+  // link.download = name;
+  // link.click();
 
-  // 5. Cleanup
-  setTimeout(() => {
-    URL.revokeObjectURL(url);
-    link.remove();
-  }, 100);
+  // // 5. Cleanup
+  // setTimeout(() => {
+  //   URL.revokeObjectURL(url);
+  //   link.remove();
+  // }, 100);
 }
 
-export async function loadFile(buf) {
+export async function loadFile(buf, fileName) {
   try {
-    const { name, time, headers, data } = decode(buf);
-    if (!name || !time || !headers || !data) {
+    // console.log(decode(buf));/
+    // console.log(decode(buf));
+    const { name, time, headers, data, type } = decode(buf);
+    if (!name || !time || !data) {
       setInfo("Cannot Load file corrupted :(");
       throw new Error("Error While loading file");
     }
+    if (type) {
+      if (type !== "file") {
+        throw new Error("Data is not a file it is  : ", type);
+      }
+    }
 
-    headers.forEach((el, i) => {
-      document.getElementById(`pch${i + 1}`).innerText = el;
-    });
+    if (headers) {
+      headers.forEach((el, i) => {
+        document.getElementById(`pch${i + 1}`).innerText = el;
+      });
+    }
 
     // recompute grid
     generateGrid(decode(data));
     setLsTime(time);
     setFileName(name);
+    if (fileName !== name) {
+      setFileName(fileName);
+    } else {
+      setFileName(name);
+    }
 
     setInfo("File View Mode (Unsaved)");
   } catch (e) {
@@ -153,5 +188,30 @@ export async function loadFile(buf) {
 }
 export function calSelArea(ar) {
   const arr = ar ?? selectedArea;
+  if (!arr) return 0;
   return (arr.row2 - arr.row1 + 1) * (1 + arr.col2 - arr.col1);
+}
+
+export function populateGrid(partialdata) {
+  if (!selectedArea) return;
+  const { row1, col1 } = selectedArea;
+
+  for (let r = 0; r < partialdata.length; r++) {
+    for (let c = 0; c < partialdata[r].length; c++) {
+      const tr = row1 + r;
+      const tc = col1 + c;
+
+      let cell = CONTAINER.querySelector(
+        `[data-row="${tr}"][data-col="${tc}"]`
+      );
+
+      // 👇 auto-grow
+      if (!cell) {
+        ensureGridSize(tr, tc);
+        cell = CONTAINER.querySelector(`[data-row="${tr}"][data-col="${tc}"]`);
+      }
+
+      cell.textContent = partialdata[r][c] ?? "";
+    }
+  }
 }

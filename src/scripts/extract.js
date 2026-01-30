@@ -1,66 +1,75 @@
-export function sanitize(hasIndexing = false) {
-  console.log("i am here and hasIndexing is : ", hasIndexing);
+import { getGridSize } from "../lib/Grid";
+import { selectedArea } from "./keybindings";
+import { CONTAINER } from "./values";
 
-  const grid = document.getElementById("grid-container");
-  if (!grid) return;
+export function sanitize() {
+  const cells = document.querySelectorAll(".cell");
 
-  let cells = grid.querySelectorAll(":scope > .cell");
+  // 1️⃣ Group cells by row
+  const rowMap = new Map();
 
-  let current_row = 0;
-  let row_data = [];
-  const res = [];
-  let biggest_row_size = -1;
+  cells.forEach((cell) => {
+    const row = +cell.dataset.row;
+    const col = +cell.dataset.col;
+    const html = cell.innerHTML.trim();
 
-  for (let k = 0; k < cells.length; k++) {
-    const cell = cells[k];
-    // if()
-    let row = Number(cell.getAttribute("data-row"));
-
-    if (row > current_row) {
-      let trmd = trimRightEmpty(row_data);
-      row_data = [];
-      if (trmd.length > biggest_row_size) biggest_row_size = trmd.length;
-
-      res.push(trmd);
-
-      current_row++;
+    if (!rowMap.has(row)) {
+      rowMap.set(row, new Map());
     }
-    row_data.push(cell.innerHTML);
-  }
+    rowMap.get(row).set(col, html);
+  });
 
-  const out = trimRightEmptyArrays(res);
+  // 2️⃣ Convert to output format, filtering empty rows
+  const data = [];
 
-  // compensate for same size
-  for (let i = 0; i < out.length; i++) {
-    let len = biggest_row_size - out[i].length;
-    if (hasIndexing) {
-      let cell = document.getElementById(`idx-${i}`);
-      if (cell) {
-        out[i].unshift(cell.innerHTML);
+  // Sort rows numerically
+  const sortedRows = Array.from(rowMap.keys()).sort((a, b) => a - b);
+
+  sortedRows.forEach((rowId) => {
+    const colMap = rowMap.get(rowId);
+
+    // Check if row has any non-empty data
+    const hasData = Array.from(colMap.values()).some((val) => val !== "");
+
+    if (hasData) {
+      // Get max column index
+      const maxCol = Math.max(...colMap.keys());
+
+      // Build dense array (fill missing columns with "")
+      const dataArr = [];
+      for (let col = 0; col <= maxCol; col++) {
+        dataArr[col] = colMap.get(col) || "";
       }
-    }
-    for (let k = 0; k < len; k++) {
-      out[i].push("");
-    }
-  }
 
-  console.log(out);
+      data.push([rowId, dataArr]);
+    }
+  });
 
-  return out;
+  // console.log(data, data.length);
+  return data;
 }
 
-function trimRightEmptyArrays(arr) {
-  let lastNonEmpty = arr.length - 1;
-  while (lastNonEmpty >= 0 && arr[lastNonEmpty].length === 0) {
-    lastNonEmpty--;
-  }
-  return arr.slice(0, lastNonEmpty + 1);
-}
+/**
+ * Returns msgpack ecnoding of selected string[][]
+ */
+export function exportSelectedData() {
+  const cellMap = new Map();
+  const { row1, row2, col1, col2 } = selectedArea;
 
-function trimRightEmpty(arr) {
-  let lastNonEmpty = arr.length - 1;
-  while (lastNonEmpty >= 0 && arr[lastNonEmpty].trim() === "") {
-    lastNonEmpty--;
+  CONTAINER.querySelectorAll("[data-row][data-col]").forEach((cell) => {
+    cellMap.set(`${cell.dataset.row},${cell.dataset.col}`, cell);
+  });
+
+  const data = [];
+
+  for (let r = row1; r <= row2; r++) {
+    const row = [];
+    for (let c = col1; c <= col2; c++) {
+      const cell = cellMap.get(`${r},${c}`);
+      row.push(cell ? cell.textContent : "");
+    }
+    data.push(row);
   }
-  return arr.slice(0, lastNonEmpty + 1);
+
+  return data;
 }

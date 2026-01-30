@@ -72,5 +72,3 @@ export function renderPrintTable(data, containerId) {
 
   CONTAINER.appendChild(table);
 }
-
- 

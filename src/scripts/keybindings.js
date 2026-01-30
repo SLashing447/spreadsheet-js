@@ -1,8 +1,15 @@
 // import { CONTAINER } from "./Grid";
 
+import { decode } from "@msgpack/msgpack";
 import { handleKeyCommand } from "./commands";
-import { calSelArea, isPrintMode, save_grid, setPrintMode } from "./util";
-import { CONTAINER } from "./values";
+import {
+  calSelArea,
+  isPrintMode,
+  populateGrid,
+  save_grid,
+  setPrintMode,
+} from "./util";
+import { CONTAINER, selected_cell, setInfo } from "./values";
 // const CONTAINER = document.getElementById("grid-container");
 
 // wofhweofh weofweiohf iowehf owe
@@ -14,14 +21,16 @@ const rng_info = document.getElementById("sel-rng");
 rng_info.addEventListener("mousedown", (e) => e.preventDefault());
 
 export let selectedArea = null;
-
-export function clearSelectedArea() {
-  rng_info.innerText = `0-0 0-0`;
-  selectedArea = null;
-
+function clearSelectionVisuals() {
   document
     .querySelectorAll(".cell.sel")
     .forEach((c) => c.classList.remove("sel"));
+}
+export function unSelectArea() {
+  if (!selectedArea) return;
+  selectedArea = null;
+  rng_info.innerText = `${selected_cell[0] + 1}-${selected_cell[1] + 1} 0-0`;
+  clearSelectionVisuals();
 }
 
 function selectRange(a, b) {
@@ -68,7 +77,7 @@ CONTAINER.addEventListener("mousedown", (e) => {
   startCell = cell;
   lastHoverCell = cell;
 
-  clearSelectedArea();
+  unSelectArea();
   cell.classList.add("sel");
 });
 
@@ -79,7 +88,7 @@ CONTAINER.addEventListener("mousemove", (e) => {
   if (!cell || cell === lastHoverCell) return;
 
   lastHoverCell = cell;
-  clearSelectedArea();
+  clearSelectionVisuals();
   selectRange(startCell, cell);
 });
 
@@ -104,20 +113,18 @@ CONTAINER.addEventListener("mouseup", () => {
   lastHoverCell = null;
 });
 
-window.addEventListener("resize", () => {});
-
 document.addEventListener("keydown", (e) => {
   const cell = e.target.closest(".cell");
   if (!cell) return;
 
   const row = +cell.dataset.row;
   const col = +cell.dataset.col;
-  const key = e.key.toLocaleLowerCase();
+  const key = e.key.toLowerCase();
 
-  handleKeyCommand(key);
+  handleKeyCommand(e);
 
   if (key === "escape") {
-    clearSel();
+    unSelectArea();
   }
 
   if (key === "enter" && e.ctrlKey) {
@@ -166,4 +173,40 @@ document.addEventListener("keydown", (e) => {
 
     return;
   }
+});
+
+window.addEventListener("paste", async (e) => {
+  const text = await navigator.clipboard.readText();
+  let data;
+
+  try {
+    // detect byte CSV
+    if (!/^\d+(,\d+)*$/.test(text)) {
+      throw new Error("Not byte data");
+    }
+
+    const bytes = Uint8Array.from(
+      text.split(",").map((n) => {
+        const v = Number(n);
+        if (v < 0 || v > 255 || Number.isNaN(v)) {
+          throw new Error("Invalid byte");
+        }
+        return v;
+      })
+    );
+
+    data = decode(bytes);
+    // console.log(decode(bytes));
+
+    // sanity check
+    if (data.type !== "clipboard") {
+      throw new Error("Decoded but not clipboard");
+    }
+  } catch {
+    return;
+  }
+
+  populateGrid(data.data);
+
+  setInfo("Paste from Clipboard", 5000);
 });

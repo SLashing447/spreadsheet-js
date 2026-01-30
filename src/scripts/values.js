@@ -5,6 +5,15 @@ const ANY_INFO = document.getElementById("info");
 const FILANAME = document.getElementById("filename");
 const LS_SAVED = document.getElementById("ls-time");
 
+const FILE_INFO = document.getElementById("file-info");
+
+export const setFileInfo = (data) => {
+  if (FILE_INFO) {
+    FILE_INFO.innerText = "";
+    FILE_INFO.innerText = data;
+  }
+};
+
 export const CONTAINER = document.getElementById("grid-container");
 let infoVersion = 0;
 let messageStack = [];

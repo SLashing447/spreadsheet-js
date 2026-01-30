@@ -10,30 +10,41 @@ import {
   getHasDataFlag,
 } from "./scripts/values";
 
-try {
-  if (getHasDataFlag() === "true") {
-    const _data = await getDbItem("data");
-    const ls = await getDbItem("ls");
-    const fName = await getDbItem("name");
-    console.log(fName, ls);
+// Wrap your initialization
+document.addEventListener("DOMContentLoaded", async () => {
+  await init();
 
-    setFileName(fName);
-    setLsTime(ls);
+  requestAnimationFrame(() => {
+    document.body.classList.add("loaded");
+  });
+});
 
-    setInfo("Welcome!!");
+async function init() {
+  try {
+    if (getHasDataFlag() === "true") {
+      const _data = await getDbItem("data");
+      const ls = await getDbItem("ls");
+      const fName = await getDbItem("name");
+      console.log(fName, ls);
 
-    const data = decode(_data);
+      setFileName(fName);
+      setLsTime(ls);
 
-    // const row = data.length;
-    // const col = data[0].length;
+      setInfo("Welcome!!");
 
-    // console.log(row, col);
-    generateGrid(data);
-  } else {
-    setLsTime();
+      const data = decode(_data);
 
-    generateGrid(null);
+      // const row = data.length;
+      // const col = data[0].length;
+
+      // console.log(row, col);
+      generateGrid(data);
+    } else {
+      setLsTime();
+
+      generateGrid(null);
+    }
+  } catch (e) {
+    throw new Error("error : ", e);
   }
-} catch (e) {
-  throw new Error("error : ", e);
 }

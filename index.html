@@ -8,6 +8,42 @@
     <link rel="stylesheet" href="./styles/global.css" />
   </head>
   <body>
+    <div class="titlebar no-print">
+      <div>
+        <!-- <span class="titlebar-title">Spreadsheet</span> -->
+
+        <button class="ttl" id="lf">Open</button>
+        <button class="ttl" id="sf">Save</button>
+        <button class="ttl" id="prf">Print</button>
+        <button class="ttl" id="clr">Clear</button>
+      </div>
+      <h4>SpreadSheet</h4>
+
+      <div class="controls">
+        <button
+          onclick="window.electronAPI.minWn()"
+          class="titlebar-btn"
+          id="minimize-btn"
+        >
+          −
+        </button>
+        <button
+          onclick="window.electronAPI.maxWn()"
+          class="titlebar-btn"
+          id="maximize-btn"
+        >
+          □
+        </button>
+        <button
+          onclick="window.electronAPI.clWn()"
+          class="titlebar-btn close-btn"
+          id="close-btn"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+
     <div id="print-container">
       <div class="print-tool-bar">
         <button id="p_print">Print</button>
@@ -53,12 +89,20 @@
           <!-- <span class="div">&nbsp;</span> -->
 
           <div id="ls-time">Jan 30 , 3pm</div>
+          <div id="file-info"></div>
         </div>
         <div class="controls">
-          <button id="lf">Load</button>
-          <button id="sf">Save</button>
-          <button id="prf">Print</button>
-          <button id="clr">Clear</button>
+          <button id="b">
+            <b>B</b>
+          </button>
+          <button id="i">
+            <i>i</i>
+          </button>
+          <button id="u">
+            <u>U</u>
+          </button>
+          <button id="h">🖍️</button>
+
           <!-- <span class="div">&nbsp;</span> -->
           <button id="sel-rng">0-0 0-0</button>
           <!-- <button></button> -->
@@ -68,6 +112,8 @@
       <div>
         <div class="info" id="info">Unsaved</div>
         <div class="controls">
+          <button onclick="window.location.reload()">Reload</button>
+
           <button>Something</button>
 
           <button id="wp-mem">Wipe Memory</button>

@@ -5,12 +5,14 @@ import { renderPrintTable } from "../lib/Print";
 import { ensureGridSize, generateGrid } from "../lib/Grid";
 import {
   CONTAINER,
+  setFileInfo,
   setFileName,
   setHasDataFlag,
   setInfo,
   setLsTime,
 } from "./values";
 import { selectedArea } from "./keybindings";
+import { saveFile } from "./api";
 
 export function cellsToFillScreen(cellWidth = 80, cellHeight = 38) {
   const screenWidth = window.innerWidth;
@@ -72,15 +74,19 @@ export function formatEpoch(ms) {
 
 export let isPrintMode = false;
 export function setPrintMode(on) {
-  isPrintMode = on;
   if (on) {
+    const data = sanitize();
+    if (!data || data.length === 0) return;
+
+    // console.log(data);
+
     document
       .querySelectorAll(".no-print")
       .forEach((d) => (d.style.display = "none"));
     document.body.style.backgroundColor = "var(--pr-bg)";
     document.getElementById("print-container").style.display = "flex";
     requestAnimationFrame(() => {
-      renderPrintTable(sanitize(false), "print-container");
+      renderPrintTable(data, "print-container");
     });
   } else {
     // cleanup
@@ -93,6 +99,8 @@ export function setPrintMode(on) {
       .querySelectorAll(".no-print")
       .forEach((d) => (d.style.display = "flex"));
   }
+
+  isPrintMode = on;
 }
 
 //  export to file
@@ -169,6 +177,8 @@ export async function loadFile(buf, fileName) {
         document.getElementById(`pch${i + 1}`).innerText = el;
       });
     }
+
+    setFileInfo(`${Math.round(buf.length / 1024)} KB`);
 
     // recompute grid
     generateGrid(decode(data));

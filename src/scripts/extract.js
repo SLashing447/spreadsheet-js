@@ -1,7 +1,6 @@
 import { getGridSize } from "../lib/Grid";
 import { selectedArea } from "./keybindings";
 import { CONTAINER } from "./values";
-
 export function sanitize() {
   const cells = document.querySelectorAll(".cell");
 
@@ -28,24 +27,29 @@ export function sanitize() {
   sortedRows.forEach((rowId) => {
     const colMap = rowMap.get(rowId);
 
-    // Check if row has any non-empty data
-    const hasData = Array.from(colMap.values()).some((val) => val !== "");
+    // Filter out empty columns and find max used column
+    const nonEmptyCols = Array.from(colMap.entries()).filter(
+      ([col, val]) => val !== ""
+    );
 
-    if (hasData) {
-      // Get max column index
-      const maxCol = Math.max(...colMap.keys());
-
-      // Build dense array (fill missing columns with "")
-      const dataArr = [];
-      for (let col = 0; col <= maxCol; col++) {
-        dataArr[col] = colMap.get(col) || "";
-      }
-
-      data.push([rowId, dataArr]);
+    if (nonEmptyCols.length === 0) {
+      return; // Skip completely empty rows
     }
+
+    // Get max column index from non-empty cells only
+    const maxCol = Math.max(...nonEmptyCols.map(([col, val]) => col));
+
+    // Build dense array (fill missing columns with "")
+    const dataArr = [];
+    for (let col = 0; col <= maxCol; col++) {
+      dataArr[col] = colMap.get(col) || "";
+    }
+
+    data.push([rowId, dataArr]);
   });
 
-  // console.log(data, data.length);
+  console.log(data);
+
   return data;
 }
 

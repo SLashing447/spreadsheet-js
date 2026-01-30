@@ -26,7 +26,6 @@ export async function printDoc() {
 prib_btn.addEventListener("click", () => {
   setPrintMode(false);
 });
-
 export function renderPrintTable(data, containerId) {
   if (!data || data.length === 0) return;
 
@@ -42,26 +41,42 @@ export function renderPrintTable(data, containerId) {
   });
 
   const table = document.createElement("table");
-  table.className = "print-table"; // Add class like Svelte version
+  table.className = "print-table";
 
   const thead = document.createElement("thead");
   const tbody = document.createElement("tbody");
 
-  // 1. Process Header (First row) - using innerHTML like {@html}
+  // Find max column count across all rows
+  const maxCols = Math.max(...data.map((row) => row[1].length));
+
+  // Normalize row length helper
+  const normalizeRow = (rowData) => {
+    const normalized = [...rowData];
+    while (normalized.length < maxCols) {
+      normalized.push(""); // Pad with empty strings
+    }
+    return normalized;
+  };
+
+  // 1. Process Header (First row) - normalized
   const headerRow = document.createElement("tr");
-  data[0].forEach((header) => {
+  const normalizedHeader = normalizeRow(data[0][1]);
+
+  normalizedHeader.forEach((header) => {
     const th = document.createElement("th");
-    th.innerHTML = header; // Changed from textContent to innerHTML
+    th.innerHTML = header;
     headerRow.appendChild(th);
   });
   thead.appendChild(headerRow);
 
-  // 2. Process Body (Remaining rows) - using slice(1) like Svelte
+  // 2. Process Body (Remaining rows) - normalized
   data.slice(1).forEach((row) => {
     const tr = document.createElement("tr");
-    row.forEach((cell) => {
+    const normalizedCells = normalizeRow(row[1]);
+
+    normalizedCells.forEach((cell) => {
       const td = document.createElement("td");
-      td.innerHTML = cell; // Already innerHTML
+      td.innerHTML = cell;
       tr.appendChild(td);
     });
     tbody.appendChild(tr);

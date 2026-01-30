@@ -30,6 +30,7 @@ export function handleKeyCommand(e) {
         data: exportSelectedData(),
       })
     );
+    unSelectArea();
 
     setInfo("Copied To Clipboard", 5000);
   }
@@ -41,11 +42,10 @@ export function handleKeyCommand(e) {
         data: exportSelectedData(),
       })
     );
+    unSelectArea();
 
     rmSelectedData();
-    unSelectArea();
   }
-
   //
 }
 
@@ -69,6 +69,4 @@ export function rmSelectedData(ar) {
       cell.innerHTML = "";
     }
   }
-
-  unSelectArea();
 }

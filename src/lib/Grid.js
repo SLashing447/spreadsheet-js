@@ -23,6 +23,8 @@ export function getGridSize() {
   // while (GRID_COLS <= col) addColumn();
 }
 
+function findMaxLen() {}
+
 export function generateGrid(data) {
   if (!CONTAINER) throw new Error("Container not found");
 
@@ -31,8 +33,8 @@ export function generateGrid(data) {
   // GRID_DATA = data ?? null;
 
   const [screenRows, screenCols] = cellsToFillScreen();
-  const dataRows = data?.[data.length - 1][0] ?? 0;
-  const dataCols = data?.[0][1]?.length ?? 0;
+  const dataRows = data ? data.length : 0;
+  const dataCols = data ? Math.max(...data.map((row) => row[1].length)) : 0;
 
   // console.log(data);
   // console.log(dataRows, dataCols);

@@ -176,15 +176,24 @@ document.addEventListener("keydown", (e) => {
 });
 
 window.addEventListener("paste", async (e) => {
-  const text = await navigator.clipboard.readText();
-  let data;
+  // Get clipboard data from event (sync, before it pastes)
+  const text = e.clipboardData?.getData("text/plain");
+
+  if (!text) return;
 
   try {
-    // detect byte CSV
+    // Quick check: is it byte CSV?
     if (!/^\d+(,\d+)*$/.test(text)) {
-      throw new Error("Not byte data");
+      return; // Let default paste happen
     }
 
+    // Looks like binary - prevent showing it
+    e.preventDefault();
+
+    // Show loading immediately
+    // setInfo("Decoding...", 0);
+
+    // Parse bytes
     const bytes = Uint8Array.from(
       text.split(",").map((n) => {
         const v = Number(n);
@@ -195,18 +204,21 @@ window.addEventListener("paste", async (e) => {
       })
     );
 
-    data = decode(bytes);
-    // console.log(decode(bytes));
+    const data = decode(bytes);
 
-    // sanity check
+    // Check if it's our clipboard data
     if (data.type !== "clipboard") {
-      throw new Error("Decoded but not clipboard");
+      throw new Error("Not clipboard data");
     }
+
+    // Add delay before populating (user sees "Decoding...")
+    await new Promise((resolve) => setTimeout(resolve, 150));
+
+    populateGrid(data.data);
+    setInfo("Pasted ✓", 2000);
   } catch {
-    return;
+    // Not our format or decode failed - allow default paste
+    // (but we already prevented, so clear and do nothing)
+    setInfo("fail", 0);
   }
-
-  populateGrid(data.data);
-
-  setInfo("Paste from Clipboard", 5000);
 });

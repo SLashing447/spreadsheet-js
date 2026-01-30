@@ -22,14 +22,20 @@
 body {
   /* overflow: hidden; */
   background-color: var(--bg);
+  opacity: 0;
 }
-
+body.loaded {
+  opacity: 1;
+}
+#file-info{
+  font-weight: bold;
+}
 .grid-container {
   /* flex: 1; */
   color: lightgrey;
   overflow: auto;
   /* height: 100%; */
-  height: 92vh;
+  height: calc(100vh - 120px);
   width: 100vw;
 }
 /* .tool-bar {
@@ -63,7 +69,62 @@ body {
   scrollbar-width: thin;
   scrollbar-color: var(--btn) transparent;
 }
+body {
+  margin: 0;
+  /* overflow: hidden; */
+}
 
-#file {
-  display: none;
+.titlebar {
+  display: flex;
+  justify-content: space-between;
+  height: 32px;
+  background: #030d302d;
+  color: #fff;
+  margin-top: 0.1rem;
+  user-select: none;
+  /* border: 1px solid grey; */
+  -webkit-app-region: drag; /* Makes it draggable */
+}
+
+.titlebar > div {
+  -webkit-app-region: no-drag;
+  /* border: 1px solid red; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1px;
+  /* background-color: #5f22c061; */
+  border-radius: 3px;
+  margin: 0.4rem;
+  padding: 0 0.2rem;
+}
+.titlebar > h4 {
+  display: flex;
+  align-items: center;
+  /* font-variant: small-caps; */
+  color: aquamarine;
+  text-transform: lowercase;
+  /* border: 1px solid red; */
+  /* padding: auto; */
+}
+.titlebar > div:last-child > button {
+  background-color: transparent;
+  font-weight: bolder;
+  font-size: medium;
+}
+.titlebar > div:last-child > button:hover {
+  background-color: rgba(128, 0, 128, 0.251);
+}
+
+.titlebar > div:first-child > button {
+  background-color: transparent;
+  /* font-weight: bold; */
+  font-weight: normal;
+  border-radius: 5px;
+  font-size: 15px;
+  padding: 0 0.5rem;
+}
+
+.titlebar > div:first-child > button:hover {
+  background-color: rgba(128, 0, 128, 0.251);
 }

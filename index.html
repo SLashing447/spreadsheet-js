@@ -5,6 +5,10 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>spreadsheet-js</title>
+    <!-- <link rel="stylesheet" href="./styles/purple.css" /> -->
+
+    <style id="theme"></style>
+
     <link rel="stylesheet" href="./styles/global.css" />
   </head>
   <body>
@@ -15,7 +19,7 @@
         <button class="ttl" id="lf">Open</button>
         <button class="ttl" id="sf">Save</button>
         <button class="ttl" id="prf">Print</button>
-        <button class="ttl" id="clr">Clear</button>
+        <button id="th">Themes</button>
       </div>
       <h4>SpreadSheet</h4>
 
@@ -73,15 +77,9 @@
         ></div>
       </div>
     </div>
-    <!-- <input
-      type="file"
-      name="Upload Your File"
-      id="file"
-      multiple="false"
-      accept="*/*"
-    /> -->
+
     <div class="tool-bar no-print">
-      <div>
+      <div id="home-pn">
         <div class="info">
           <div id="filename" contenteditable="true" spellcheck="false">
             untitled
@@ -92,31 +90,42 @@
           <div id="file-info"></div>
         </div>
         <div class="controls">
-          <button id="b">
+          <button class="decor" id="b">
             <b>B</b>
           </button>
-          <button id="i">
+          <button class="decor" id="i">
             <i>i</i>
           </button>
-          <button id="u">
+          <button class="decor" id="u">
             <u>U</u>
           </button>
-          <button id="h">🖍️</button>
-
+          <button class="decor" id="c">
+            <u>C</u>
+          </button>
+          <button class="decor" id="h">🖍️</button> |
+          <button class="ttl" id="clr">Clear</button> |
           <!-- <span class="div">&nbsp;</span> -->
           <button id="sel-rng">0-0 0-0</button>
           <!-- <button></button> -->
         </div>
       </div>
 
+      <div id="th-pn" class="hidden">
+        <div>
+          <button id="bth">Back</button>
+          <button id="upcss">Upload CSS</button>
+        </div>
+        <div id="th-btns"></div>
+      </div>
+
       <div>
         <div class="info" id="info">Unsaved</div>
         <div class="controls">
+          <button>Math</button>
+
           <button onclick="window.location.reload()">Reload</button>
-
-          <button>Something</button>
-
-          <button id="wp-mem">Wipe Memory</button>
+          |
+          <button id="wp-mem">Delete File</button>
 
           <!-- <button>Print</button> -->
         </div>

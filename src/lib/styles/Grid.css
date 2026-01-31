@@ -76,12 +76,15 @@
   /* border: 1px solid red; */
   width: 30px;
   margin-right: 0.4rem;
+  position: sticky;
+  left: 0;
 }
 .col-head,
 .row-head {
   user-select: none;
   cursor: default;
-  color: grey;
+  color: var(--font-dim);
+
   opacity: 0.5;
 }
 .col-head {
@@ -100,7 +103,7 @@
 }
 .corner {
   width: 30px;
-  color: grey;
+  color: var(--font-dim);
   /* border: 1px solid red; */
   display: flex;
   padding-top: 0.7rem;

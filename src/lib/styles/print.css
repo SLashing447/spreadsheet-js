@@ -26,6 +26,13 @@
   display: flex;
   border-radius: 5px;
 }
+.print-tool-bar > button {
+  background-color: var(--btn);
+  color: black;
+}
+.print-tool-bar > button:hover {
+  background-color: var(--btn-high);
+}
 .print-tool-bar {
   gap: 0.4rem;
   padding: 0.3rem 0;
@@ -133,6 +140,15 @@
   page-break-inside: avoid;
 
   page-break-after: auto;
+}
+
+.print-table h {
+  /* background-color: var(--hlighter) !important; */
+  color: var(--hpcol) !important;
+}
+
+.print-table td:has(c) {
+  text-align: center;
 }
 
 .print-table td {

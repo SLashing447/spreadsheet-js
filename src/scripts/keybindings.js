@@ -4,12 +4,14 @@ import { decode } from "@msgpack/msgpack";
 import { handleKeyCommand } from "./commands";
 import {
   calSelArea,
+  getElementeByPos,
   isPrintMode,
   populateGrid,
   save_grid,
   setPrintMode,
 } from "./util";
 import { CONTAINER, selected_cell, setInfo } from "./values";
+import { ensureGridSize } from "../lib/Grid";
 // const CONTAINER = document.getElementById("grid-container");
 
 // wofhweofh weofweiohf iowehf owe
@@ -55,9 +57,7 @@ function selectRange(a, b) {
 
   for (let r = rowMin; r <= rowMax; r++) {
     for (let c = colMin; c <= colMax; c++) {
-      document
-        .querySelector(`[data-row="${r}"][data-col="${c}"]`)
-        ?.classList.add("sel");
+      getElementeByPos(r, c)?.classList.add("sel");
     }
   }
 }
@@ -113,27 +113,20 @@ CONTAINER.addEventListener("mouseup", () => {
   lastHoverCell = null;
 });
 
-document.addEventListener("keydown", (e) => {
-  const cell = e.target.closest(".cell");
-  if (!cell) return;
-
-  const row = +cell.dataset.row;
-  const col = +cell.dataset.col;
+// generic listner
+window.addEventListener("keydown", (e) => {
   const key = e.key.toLowerCase();
 
-  handleKeyCommand(e);
-
   if (key === "escape") {
+    if (isPrintMode) {
+      setPrintMode(false);
+    }
+
     unSelectArea();
   }
 
-  if (key === "enter" && e.ctrlKey) {
-    // e.preventDefault();
-
-    document
-      .querySelector(`[data-col="${col}"][data-row="${row + 1}"]`)
-      ?.focus();
-    return;
+  if (key === "r" && e.ctrlKey) {
+    e.preventDefault();
   }
 
   //   ! SAVE
@@ -150,6 +143,24 @@ document.addEventListener("keydown", (e) => {
     e.preventDefault();
     if (!isPrintMode) setPrintMode(true);
     else window.print();
+    return;
+  }
+});
+
+CONTAINER.addEventListener("keydown", (e) => {
+  const cell = e.target.closest(".cell");
+  if (!cell) return;
+
+  const row = +cell.dataset.row;
+  const col = +cell.dataset.col;
+  const key = e.key.toLowerCase();
+
+  handleKeyCommand(e);
+
+  if (key === "enter" && e.ctrlKey) {
+    e.preventDefault();
+
+    getElementeByPos(row + 1, col)?.focus();
     return;
   }
 
@@ -169,7 +180,7 @@ document.addEventListener("keydown", (e) => {
     if (key === "arrowleft") c--;
     if (key === "arrowright") c++;
 
-    document.querySelector(`[data-row="${r}"][data-col="${c}"]`)?.focus();
+    getElementeByPos(r, c)?.focus();
 
     return;
   }
@@ -222,3 +233,22 @@ window.addEventListener("paste", async (e) => {
     setInfo("fail", 0);
   }
 });
+
+//  add zoom
+
+// CONTAINER.addEventListener(
+//   "wheel",
+//   (e) => {
+//     if (!e.ctrlKey) return; // only when Ctrl is held
+
+//     e.preventDefault(); // stop browser zoom (important)
+
+//     if (e.deltaY < 0) {
+//       ensureGridSize(e.deltaY,e)
+//       console.log("Ctrl + scroll UP");
+//     } else if (e.deltaY > 0) {
+//       console.log("Ctrl + scroll DOWN");
+//     }
+//   },
+//   { passive: false }
+// );

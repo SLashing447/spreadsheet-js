@@ -9,6 +9,8 @@ import {
   setLsTime,
   getHasDataFlag,
 } from "./scripts/values";
+import { loadTheme } from "./scripts/theme_utils";
+// import { loadTheme } from "./scripts/util";
 
 // Wrap your initialization
 document.addEventListener("DOMContentLoaded", async () => {
@@ -20,31 +22,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 async function init() {
-  try {
-    if (getHasDataFlag() === "true") {
-      const _data = await getDbItem("data");
-      const ls = await getDbItem("ls");
-      const fName = await getDbItem("name");
-      console.log(fName, ls);
+  // load theme
+  await loadTheme();
 
-      setFileName(fName);
-      setLsTime(ls);
+  if (getHasDataFlag() === "true") {
+    const _data = await getDbItem("data");
+    const ls = await getDbItem("ls");
+    const fName = await getDbItem("name");
+    console.log(fName, ls);
 
-      setInfo("Welcome!!");
+    setFileName(fName);
+    setLsTime(ls);
 
-      const data = decode(_data);
+    setInfo("Welcome!!");
 
-      // const row = data.length;
-      // const col = data[0].length;
+    const data = decode(_data);
 
-      // console.log(row, col);
-      generateGrid(data);
-    } else {
-      setLsTime();
+    // const row = data.length;
+    // const col = data[0].length;
 
-      generateGrid(null);
-    }
-  } catch (e) {
-    throw new Error("error : ", e);
+    // console.log(row, col);
+    generateGrid(data);
+  } else {
+    setLsTime();
+
+    generateGrid(null);
   }
 }

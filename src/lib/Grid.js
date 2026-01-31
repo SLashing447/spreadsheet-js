@@ -23,8 +23,6 @@ export function getGridSize() {
   // while (GRID_COLS <= col) addColumn();
 }
 
-function findMaxLen() {}
-
 export function generateGrid(data) {
   if (!CONTAINER) throw new Error("Container not found");
 
@@ -33,8 +31,8 @@ export function generateGrid(data) {
   // GRID_DATA = data ?? null;
 
   const [screenRows, screenCols] = cellsToFillScreen();
-  const dataRows = data ? data.length : 0;
-  const dataCols = data ? Math.max(...data.map((row) => row[1].length)) : 0;
+  const dataCols = data ? data.length : 0;
+  const dataRows = data ? Math.max(...data.map((row) => row[0])) : 0;
 
   // console.log(data);
   // console.log(dataRows, dataCols);
@@ -91,39 +89,7 @@ export function generateGrid(data) {
   } else {
     for (let r = 0; r < rows; r++) addRow();
   }
-
-  // GRID_DATA = null;
-
-  // addColumn();
 }
-
-// function addColumn() {
-//   const colIndex = GRID_COLS; // 👈 THIS is the key
-
-//   for (let r = 0; r < GRID_ROWS; r++) {
-//     const cell = document.createElement("div");
-//     cell.className = "cell";
-//     cell.dataset.row = r;
-//     cell.dataset.col = colIndex;
-
-//     cell.spellcheck = false;
-//     cell.dir = "auto";
-//     cell.role = "textbox";
-//     cell.contentEditable = true;
-//     cell.tabIndex = 0;
-
-//     cell.style.gridRow = r + 2;
-//     cell.style.gridColumn = colIndex + 2;
-
-//     if (GRID_DATA?.[r]?.[colIndex] != null) {
-//       cell.textContent = GRID_DATA[r][colIndex];
-//     }
-
-//     CONTAINER.appendChild(cell);
-//   }
-
-//   GRID_COLS++; // 👈 CRITICAL
-// }
 
 function addColumn() {
   const colIndex = GRID_COLS;

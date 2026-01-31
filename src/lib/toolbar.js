@@ -1,35 +1,26 @@
-import { decode } from "@msgpack/msgpack";
 import { clearDb } from "../scripts/db";
-
-import { exportAndDownloadFile, loadFile, setPrintMode } from "../scripts/util";
+import {
+  applyThemeByName,
+  createNewUserTheme,
+  removeUserTheme,
+} from "../scripts/theme_utils";
+import {
+  exportAndDownloadFile,
+  getElementeByPos,
+  loadFile,
+  setPrintMode,
+} from "../scripts/util";
 import { generateGrid } from "./Grid";
 
 import "./styles/toolbar.css";
-import { setHasDataFlag } from "../scripts/values";
-import { openFile } from "../scripts/api";
+import { selected_cell, setHasDataFlag } from "../scripts/values";
+import { openCSS, openFile } from "../scripts/api";
 
-const lf_btn = document.getElementById("lf");
-const sf_btn = document.getElementById("sf");
-const prf_btn = document.getElementById("prf");
-const clr_btn = document.getElementById("clr");
-const wipe = document.getElementById("wp-mem");
-// const fileUp = document.getElementById("file");
+const home_pn = document.getElementById("home-pn"); //0
+const th_pn = document.getElementById("th-pn"); // 1
+let pannel = 0;
 
-// fileUp.addEventListener("change", async () => {
-//   const files = fileUp.files; // FileList
-
-//   if (!files.length) return;
-
-//   const file = files[0];
-
-//   const buffer = await file.arrayBuffer();
-
-//   // console.log(file)
-
-//   await loadFile(new Uint8Array(buffer), file.name);
-// });
-
-lf_btn.addEventListener("click", async () => {
+document.getElementById("lf").addEventListener("click", async () => {
   try {
     const result = await openFile();
 
@@ -44,18 +35,112 @@ lf_btn.addEventListener("click", async () => {
   }
 });
 
-wipe.addEventListener("click", async () => {
+document.getElementById("wp-mem").addEventListener("click", async () => {
   setHasDataFlag(false);
   await clearDb();
 });
 
-clr_btn.addEventListener("click", () => {
+document.getElementById("clr").addEventListener("click", () => {
   generateGrid();
 });
 
-prf_btn.addEventListener("click", () => {
+document.getElementById("prf").addEventListener("click", () => {
   setPrintMode(true);
 });
-sf_btn.addEventListener("click", async () => {
+document.getElementById("sf").addEventListener("click", async () => {
   await exportAndDownloadFile();
+});
+
+// decor thing
+document.querySelectorAll(".decor").forEach((el) =>
+  el.addEventListener("click", (e) => {
+    // console.log(e.id);\
+    if (!selected_cell) return;
+
+    const cell = getElementeByPos(selected_cell[0], selected_cell[1]);
+
+    if (!cell) return;
+
+    toggleWrap(cell, el.id);
+  })
+);
+
+function toggleWrap(el, tag = "b") {
+  const first = el.firstElementChild;
+
+  // 🔓 unwrap
+  if (
+    first &&
+    first.tagName.toLowerCase() === tag &&
+    first.nextSibling === null // ensure it's the ONLY wrapper
+  ) {
+    while (first.firstChild) {
+      el.insertBefore(first.firstChild, first);
+    }
+    first.remove();
+    return;
+  }
+
+  // 🔒 wrap
+  const wrapper = document.createElement(tag);
+  while (el.firstChild) {
+    wrapper.appendChild(el.firstChild);
+  }
+  el.appendChild(wrapper);
+}
+
+// document.getElementById("th").addEventListener("click", (e) => {});
+document.getElementById("th").addEventListener("click", () => {
+  if (pannel === 0) {
+    pannel = 1;
+    home_pn.classList.add("hidden");
+    th_pn.classList.remove("hidden");
+  }
+});
+
+document.getElementById("bth").addEventListener("click", () => {
+  if (pannel === 1) {
+    pannel = 0;
+
+    home_pn.classList.remove("hidden");
+    th_pn.classList.add("hidden");
+  }
+});
+
+document.getElementById("upcss").addEventListener("click", async () => {
+  const css = await openCSS();
+
+  if (css) {
+    const root = css.css;
+
+    // console.log(root);
+    createNewUserTheme(root, css.name.split(".")[0]);
+  }
+  // if (pannel === 1) {
+  //   pannel = 0;
+  //   home_pn.classList.remove("hidden");
+  //   th_pn.classList.add("hidden");
+  // }
+});
+
+document.getElementById("th-btns").addEventListener("click", async (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+
+  const id = btn.id;
+
+  // console.log(id);
+  await applyThemeByName(id);
+});
+
+document.getElementById("th-btns").addEventListener("mousedown", async (e) => {
+  if (e.button !== 1) return;
+
+  const btn = e.target.closest("button");
+  if (!btn) return;
+
+  const id = btn.id;
+  if (id.split("-")[0].toLowerCase() !== "usertheme") return;
+
+  await removeUserTheme(id);
 });

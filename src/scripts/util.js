@@ -13,6 +13,7 @@ import {
 } from "./values";
 import { selectedArea } from "./keybindings";
 import { saveFile } from "./api";
+import { THEMES } from "../../styles/themes/themes";
 
 export function cellsToFillScreen(cellWidth = 80, cellHeight = 38) {
   const screenWidth = window.innerWidth;
@@ -43,8 +44,10 @@ export function cellsToFillContainer(
 }
 
 export async function save_grid() {
-  const data = sanitize(false);
-  if (data) {
+  const data = sanitize();
+
+  // console.log(data);
+  if (data && data.length !== 0) {
     const fileName = document.getElementById("filename").innerText;
     const name = fileName ? fileName : "untitled";
     const now = Date.now();
@@ -58,6 +61,8 @@ export async function save_grid() {
     setHasDataFlag(true);
 
     setInfo("Saved 💾");
+  } else {
+    return -1;
   }
 }
 
@@ -109,8 +114,8 @@ export async function exportAndDownloadFile() {
   // save grid first
 
   try {
-    await save_grid();
-
+    let st = await save_grid();
+    if (st === -1) return;
     const headers = await getDbItem("headers");
     const name = await getDbItem("name");
     const _data = await getDbItem("data");
@@ -211,17 +216,19 @@ export function populateGrid(partialdata) {
       const tr = row1 + r;
       const tc = col1 + c;
 
-      let cell = CONTAINER.querySelector(
-        `[data-row="${tr}"][data-col="${tc}"]`
-      );
+      let cell = getElementeByPos(tr, tc);
 
       // 👇 auto-grow
       if (!cell) {
         ensureGridSize(tr, tc);
-        cell = CONTAINER.querySelector(`[data-row="${tr}"][data-col="${tc}"]`);
+        cell = getElementeByPos(tr, tc);
       }
 
       cell.textContent = partialdata[r][c] ?? "";
     }
   }
+}
+
+export function getElementeByPos(row, col) {
+  return CONTAINER.querySelector(`[data-row="${row}"][data-col="${col}"]`);
 }

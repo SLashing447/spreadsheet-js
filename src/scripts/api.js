@@ -24,6 +24,28 @@ export async function openFile() {
   };
 }
 
+export async function openCSS() {
+  if (!window.electronAPI) {
+    throw new Error("Not running in Electron");
+  }
+
+  const result = await window.electronAPI.openCSS();
+
+  if (result.canceled) {
+    return null; // User cancelled
+  }
+
+  if (result.error) {
+    throw new Error(`Failed to open file: ${result.error}`);
+  }
+
+  return {
+    css: result.css,
+    name: result.name,
+    path: result.path,
+  };
+}
+
 /**
  * Save blob to file with dialog
  * @param {Blob} blob - Data to save

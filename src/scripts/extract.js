@@ -29,7 +29,7 @@ export function sanitize() {
 
     // Filter out empty columns and find max used column
     const nonEmptyCols = Array.from(colMap.entries()).filter(
-      ([col, val]) => val !== ""
+      ([_, val]) => val !== ""
     );
 
     if (nonEmptyCols.length === 0) {
@@ -48,7 +48,7 @@ export function sanitize() {
     data.push([rowId, dataArr]);
   });
 
-  console.log(data);
+  // console.log(data);
 
   return data;
 }

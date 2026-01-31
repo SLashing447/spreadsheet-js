@@ -69,6 +69,30 @@ app.whenReady().then(() => {
     }
   });
 
+  ipcMain.handle("open-css", async () => {
+    try {
+      const result = await dialog.showOpenDialog(mainWindow, {
+        properties: ["openFile"],
+        filters: [{ name: "CSS", extensions: ["css"] }],
+      });
+
+      if (result.canceled || !result.filePaths.length) {
+        return { canceled: true };
+      }
+
+      const filePath = result.filePaths[0];
+      const cssText = await fs.readFile(filePath, "utf8");
+      return {
+        canceled: false,
+        name: path.basename(filePath),
+        path: filePath,
+        css: cssText,
+      };
+    } catch (error) {
+      return { canceled: false, error: error.message };
+    }
+  });
+
   ipcMain.handle("save-file", async (event, arrayBuffer, defaultName) => {
     try {
       const result = await dialog.showSaveDialog(mainWindow, {

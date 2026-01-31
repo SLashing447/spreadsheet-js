@@ -27,8 +27,8 @@ app.whenReady().then(async () => {
   const THEMES_DIR = path.join(userDir, "themes");
   const PLUGINS_DIR = path.join(userDir, "plugins");
 
-  await fs.mkdir(THEMES_DIR, { recursive: true });
-  await fs.mkdir(PLUGINS_DIR, { recursive: true });
+  // await fs.mkdir(THEMES_DIR, { recursive: true });
+  // await fs.mkdir(PLUGINS_DIR, { recursive: true });
 
   // Window controls - after window is created
   ipcMain.on("window-minimize", () => {
@@ -52,7 +52,7 @@ app.whenReady().then(async () => {
   });
 
   // File handlers
-  ipcMain.handle("open-file", async (type = 0) => {
+  ipcMain.handle("open-file", async (_, type) => {
     try {
       // type 1 css , type 2 js , type 0 bin
 
@@ -70,7 +70,7 @@ app.whenReady().then(async () => {
 
       const result = await dialog.showOpenDialog(mainWindow, {
         properties: ["openFile"],
-        filters: [{ name, extensions: ext }],
+        filters: [{ name, extensions: [ext] }],
       });
 
       if (result.canceled || !result.filePaths.length) {
@@ -94,7 +94,7 @@ app.whenReady().then(async () => {
     }
   });
 
-  ipcMain.handle("save-file", async (event, arrayBuffer, defaultName) => {
+  ipcMain.handle("save-file", async (_, arrayBuffer, defaultName) => {
     try {
       const result = await dialog.showSaveDialog(mainWindow, {
         defaultPath: defaultName || "untitled",
@@ -174,7 +174,7 @@ app.whenReady().then(async () => {
         type === "themes"
           ? THEMES_DIR
           : type === "plugins"
-          ? SCRIPTS_DIR
+          ? PLUGINS_DIR
           : null;
 
       if (!baseDir) {

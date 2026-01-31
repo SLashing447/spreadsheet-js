@@ -9,7 +9,7 @@ export function handleKeyCommand(e) {
   const key = e.key.toLowerCase();
 
   // delete the inner text
-  if (key === "d" || key === "delete" || key === "backspace") {
+  if (key === "delete" || key === "backspace") {
     // console.log(calSelArea());
 
     rmSelectedData();
@@ -67,4 +67,6 @@ export function rmSelectedData(ar) {
       cell.innerHTML = "";
     }
   }
+
+  unSelectArea();
 }

@@ -28,32 +28,6 @@ export const setInfo = (msg, type = 1, timeout = 0) => {
   } else if (type === 3 && ANY_INFO3) {
     ANY_INFO3.textContent = msg;
   }
-
-  // skip exact duplicates (top of stack)
-  // const last = messageStack.at(-1);
-  // if (last && last.msg === msg) return;
-
-  // const version = ++infoVersion;
-
-  // const entry = {
-  //   msg,
-  //   version,
-  //   prev: ANY_INFO.innerText,
-  // };
-
-  // messageStack.push(entry);
-
-  // if (timeout > 0) {
-  //   setTimeout(() => {
-  //     // only act if still relevant
-  //     if (version !== infoVersion) return;
-
-  //     messageStack.pop();
-  //     const restore = messageStack.at(-1);
-
-  //     ANY_INFO.innerText = restore ? restore.msg : entry.prev;
-  //   }, timeout);
-  // }
 };
 
 export const setFileName = (name) => {

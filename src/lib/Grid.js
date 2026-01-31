@@ -31,8 +31,16 @@ export function generateGrid(data) {
   // GRID_DATA = data ?? null;
 
   const [screenRows, screenCols] = cellsToFillScreen();
-  const dataCols = data ? data.length : 0;
-  const dataRows = data ? Math.max(...data.map((row) => row[0])) : 0;
+  let dataCols = 0;
+  let dataRows = 0;
+
+  if (data && data.length > 0) {
+    // Get max column count across all rows
+    dataCols = Math.max(...data.map((row) => row[1]?.length || 0));
+
+    // Get max row index
+    dataRows = Math.max(...data.map((row) => row[0])) + 1; // +1 because row_id is 0-indexed
+  }
 
   // console.log(data);
   // console.log(dataRows, dataCols);
@@ -66,28 +74,26 @@ export function generateGrid(data) {
     CONTAINER.appendChild(head);
   }
 
-  // for(let r=0;r<)
-  // console.log(dataRows);
-  if (data) {
-    let k = 0;
-    for (let i = 0; i < dataRows + 1; i++) {
-      let actual_row = data[k][0];
-      let data_row = data[k][1];
+  GRID_COLS = cols;
 
-      if (actual_row == i) {
-        // console.log(k, data_row);
+  // ========== POPULATE GRID ==========
+  if (data && data.length > 0) {
+    // Create a map for quick lookup: row_id -> row_data
+    const dataMap = new Map();
+    data.forEach(([row_id, row_data]) => {
+      dataMap.set(row_id, row_data);
+    });
 
-        addRow(data_row);
-        k++;
-      } else {
-        addRow();
-      }
+    // Fill all rows
+    for (let i = 0; i < rows; i++) {
+      const row_data = dataMap.get(i); // Get data for this row (or undefined)
+      addRow(row_data);
     }
-
-    // to compensate full screen add the extra ones
-    for (let g = 0; g < rows - dataRows; g++) addRow();
   } else {
-    for (let r = 0; r < rows; r++) addRow();
+    // No data - just fill with empty rows
+    for (let r = 0; r < rows; r++) {
+      addRow();
+    }
   }
 }
 
@@ -157,16 +163,9 @@ function addRow(row_data) {
     // 👇 populate here
     // console.log(GRID_DATA?.[rowIndex][0], rowIndex);
     try {
-      if (row_data !== undefined) cell.innerHTML = row_data[c] || "";
-      // if (GRID_DATA?.[rowIndex][0] === rowIndex) {
-      //   // if (GRID_DATA?.[rowIndex]?.[c] != null) {
-      //   console.log("val=", GRID_DATA[last_skipped_row][1]);
-      //   cell.innerHTML = GRID_DATA[last_skipped_row][1][c];
-      //   // last_skipped_row++;
-      // } else {
-      //   cell.innerHTML = "";
-      //   current_data_row = GRID_DATA?.[rowIndex][0];
-      // }
+      if (row_data && row_data[c] !== undefined) {
+        cell.textContent = row_data[c]; // Use textContent, not innerHTML for safety
+      }
     } catch (_) {
       throw new Error("Error reading data : ", GRID_DATA[rowIndex]);
     }

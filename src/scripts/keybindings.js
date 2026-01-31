@@ -12,7 +12,11 @@ import {
 } from "./util";
 import { CONTAINER, selected_cell, setInfo } from "./values";
 import { ensureGridSize } from "../lib/Grid";
-import { handleCommand, setLiveSelectingArea } from "./plugins";
+import {
+  handleCommand,
+  setLiveSelectingArea,
+  triggerKeyWatcher,
+} from "./plugins";
 // const CONTAINER = document.getElementById("grid-container");
 
 // wofhweofh weofweiohf iowehf owe
@@ -120,6 +124,7 @@ CONTAINER.addEventListener("mouseup", () => {
 
 // generic listner
 window.addEventListener("keydown", (e) => {
+  triggerKeyWatcher(e);
   const key = e.key.toLowerCase();
 
   if (key === "escape") {
@@ -205,7 +210,7 @@ CONTAINER.addEventListener("keydown", (e) => {
 window.addEventListener("paste", async (e) => {
   // Get clipboard data from event (sync, before it pastes)
   const text = e.clipboardData?.getData("text/plain");
-
+  // console.log(text);
   if (!text) return;
 
   try {
@@ -233,19 +238,22 @@ window.addEventListener("paste", async (e) => {
 
     const data = decode(bytes);
 
+    console.log(data.data);
+
     // Check if it's our clipboard data
     if (data.type !== "clipboard") {
       throw new Error("Not clipboard data");
     }
 
     // Add delay before populating (user sees "Decoding...")
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    // await new Promise((resolve) => setTimeout(resolve, 150));
 
     populateGrid(data.data);
-    setInfo("Pasted ✓", 2000);
-  } catch {
+    setInfo("Pasted ✓", 1);
+  } catch(e) {
+    console.log(e)
     // Not our format or decode failed - allow default paste
     // (but we already prevented, so clear and do nothing)
-    setInfo("fail", 0);
+    setInfo("fail", 1);
   }
 });

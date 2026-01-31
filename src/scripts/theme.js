@@ -1,5 +1,5 @@
 import { decode, encode } from "@msgpack/msgpack";
-import { THEMES } from "../../styles/themes/themes";
+import { THEMES } from "../../styles/themes/THEMES";
 import { getDbItem, removeDbItem, setDbItem } from "./db";
 import { readUserData, writeUserData } from "./api";
 

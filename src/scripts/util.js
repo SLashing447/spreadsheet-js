@@ -5,6 +5,7 @@ import { renderPrintTable } from "../lib/Print";
 import { ensureGridSize, generateGrid } from "../lib/Grid";
 import {
   CONTAINER,
+  selected_cell,
   setFileInfo,
   setFileName,
   setHasDataFlag,
@@ -13,7 +14,7 @@ import {
 } from "./values";
 import { selectedArea } from "./keybindings";
 import { saveFile } from "./api";
-import { THEMES } from "../../styles/themes/themes";
+import { THEMES } from "../../styles/themes/THEMES";
 
 export function cellsToFillScreen(cellWidth = 80, cellHeight = 38) {
   const screenWidth = window.innerWidth;
@@ -208,22 +209,23 @@ export function calSelArea(ar) {
 }
 
 export function populateGrid(partialdata) {
-  if (!selectedArea) return;
-  const { row1, col1 } = selectedArea;
+  // console.log(selectedArea)
+  if (!selected_cell) return;
+  const row = selected_cell[0];
+  const col = selected_cell[1];
 
   for (let r = 0; r < partialdata.length; r++) {
     for (let c = 0; c < partialdata[r].length; c++) {
-      const tr = row1 + r;
-      const tc = col1 + c;
+      const tr = row + r;
+      const tc = col + c;
 
-      let cell = getElementeByPos(tr, tc);
+      let cell = getCellByPos(tr, tc);
 
       // 👇 auto-grow
       if (!cell) {
         ensureGridSize(tr, tc);
-        cell = getElementeByPos(tr, tc);
+        cell = getCellByPos(tr, tc);
       }
-
       cell.textContent = partialdata[r][c] ?? "";
     }
   }

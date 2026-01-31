@@ -9,7 +9,7 @@ import {
   setLsTime,
   getHasDataFlag,
 } from "./scripts/values";
-import { loadTheme } from "./scripts/theme_utils";
+import { loadTheme } from "./scripts/theme";
 import { loadAllPluginsOnStartup } from "./scripts/plugins";
 // import { loadTheme } from "./scripts/util";
 

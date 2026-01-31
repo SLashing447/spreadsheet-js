@@ -2,7 +2,7 @@ import {
   applyThemeByName,
   createNewUserTheme,
   removeUserTheme,
-} from "../scripts/theme_utils";
+} from "../scripts/theme";
 import {
   exportAndDownloadFile,
   getCellByPos,
@@ -14,6 +14,7 @@ import "./styles/toolbar.css";
 import { selected_cell, setHasDataFlag } from "../scripts/values";
 import { openFile } from "../scripts/api";
 import { applyPluginByName, createNewUserPlugin } from "../scripts/plugins";
+import { generateGrid } from "./Grid";
 
 const PANNELS = [
   document.getElementById("home-pn"), //0
@@ -76,6 +77,11 @@ document.getElementById("home-btns").addEventListener("click", (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
   const id = btn.id;
+
+  if (id === "clr") {
+    generateGrid();
+    return;
+  }
 
   if (!selected_cell) return;
 

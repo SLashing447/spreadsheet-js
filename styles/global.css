@@ -19,6 +19,8 @@ body {
 body.loaded {
   opacity: 1;
 }
+
+
 #file-info {
   font-weight: bold;
 }
@@ -57,7 +59,7 @@ h {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--btn);
+  background-color: transparent !important;
   border-radius: 10px;
   transition: background-color 0.3s ease;
 }

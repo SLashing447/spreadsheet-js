@@ -10,6 +10,7 @@ import {
   getHasDataFlag,
 } from "./scripts/values";
 import { loadTheme } from "./scripts/theme_utils";
+import { loadAllPluginsOnStartup } from "./scripts/plugins";
 // import { loadTheme } from "./scripts/util";
 
 // Wrap your initialization
@@ -24,6 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function init() {
   // load theme
   await loadTheme();
+  await loadAllPluginsOnStartup();
 
   if (getHasDataFlag() === "true") {
     const _data = await getDbItem("data");

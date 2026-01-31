@@ -2,14 +2,12 @@ import { encode } from "@msgpack/msgpack";
 import { exportSelectedData } from "./extract";
 import { selectedArea, unSelectArea } from "./keybindings";
 import { CONTAINER, setInfo } from "./values";
-import { calSelArea } from "./util";
-
-export function handleCommand(text) {
-  //   console.log(text, selectedArea);
-}
+import { calSelArea, getCellByPos } from "./util";
+import { handleCommand } from "./plugins";
 
 export function handleKeyCommand(e) {
   const key = e.key.toLowerCase();
+
   // delete the inner text
   if (key === "d" || key === "delete" || key === "backspace") {
     // console.log(calSelArea());
@@ -32,7 +30,7 @@ export function handleKeyCommand(e) {
     );
     unSelectArea();
 
-    setInfo("Copied To Clipboard", 5000);
+    setInfo("Copied To Clipboard", 1);
   }
 
   if (key === "x" && e.ctrlKey) {

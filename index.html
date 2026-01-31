@@ -13,13 +13,14 @@
   </head>
   <body>
     <div class="titlebar no-print">
-      <div>
+      <div id="ttlbar-options">
         <!-- <span class="titlebar-title">Spreadsheet</span> -->
 
-        <button class="ttl" id="lf">Open</button>
-        <button class="ttl" id="sf">Save</button>
-        <button class="ttl" id="prf">Print</button>
-        <button id="th">Themes</button>
+        <button id="0">Open</button>
+        <button id="1">Save</button>
+        <button id="2">Print</button>
+        <button id="3">Themes</button>
+        <button id="4">Plugins</button>
       </div>
       <h4>SpreadSheet</h4>
 
@@ -79,56 +80,57 @@
     </div>
 
     <div class="tool-bar no-print">
-      <div id="home-pn">
+      <div id="home-pn" class="pannel">
         <div class="info">
           <div id="filename" contenteditable="true" spellcheck="false">
             untitled
           </div>
-          <!-- <span class="div">&nbsp;</span> -->
 
           <div id="ls-time">Jan 30 , 3pm</div>
           <div id="file-info"></div>
         </div>
-        <div class="controls">
-          <button class="decor" id="b">
+        <div class="pn-btns" id="home-btns">
+          <button id="b">
             <b>B</b>
           </button>
-          <button class="decor" id="i">
+          <button id="i">
             <i>i</i>
           </button>
-          <button class="decor" id="u">
+          <button id="u">
             <u>U</u>
           </button>
-          <button class="decor" id="c">
+          <button id="c">
             <u>C</u>
           </button>
-          <button class="decor" id="h">🖍️</button> |
-          <button class="ttl" id="clr">Clear</button> |
+          <button id="h">🖍️</button> | <button id="clr">Clear</button> |
           <!-- <span class="div">&nbsp;</span> -->
           <button id="sel-rng">0-0 0-0</button>
           <!-- <button></button> -->
         </div>
       </div>
 
-      <div id="th-pn" class="hidden">
+      <div id="th-pn" class="pannel hidden">
         <div>
-          <button id="bth">Back</button>
-          <button id="upcss">Upload CSS</button>
+          <button class="bpn">Back</button>
+          <button id="upcss">New Theme</button>
+          <input type="text" class="srch-pn" placeholder="search theme" />
         </div>
-        <div id="th-btns"></div>
+        <div id="th-btns" class="pn-btns"></div>
       </div>
 
-      <div>
-        <div class="info" id="info">Unsaved</div>
-        <div class="controls">
-          <button>Math</button>
-
-          <button onclick="window.location.reload()">Reload</button>
-          |
-          <button id="wp-mem">Delete File</button>
-
-          <!-- <button>Print</button> -->
+      <div id="pl-pn" class="pannel hidden">
+        <div>
+          <button class="bpn">Back</button>
+          <button id="uppl">New Plugin</button>
+          <input type="text" class="srch-pn" placeholder="search plugin" />
         </div>
+        <div id="pl-btns" class="pn-btns"></div>
+      </div>
+
+      <div class="tool-end">
+        <div class="info" id="info1">Unsaved</div>
+        <div class="info" id="info2">Other Dynamic Info</div>
+        <div class="info" id="info3">Plugins: 3/10 | Theme : Purple</div>
       </div>
     </div>
     <div class="grid-container no-print">

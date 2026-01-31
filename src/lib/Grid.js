@@ -1,5 +1,5 @@
 // This file will generate the required grids
-import { handleCommand } from "../scripts/commands";
+// import { handleCommand } from "../scripts/commands";
 import { cellsToFillScreen } from "../scripts/util";
 import { CONTAINER } from "../scripts/values";
 import "./styles/Grid.css";
@@ -112,7 +112,7 @@ function addColumn() {
     cell.spellcheck = false;
     cell.dir = "auto";
     cell.role = "textbox";
-    cell.contentEditable = true;
+    cell.contentEditable = "plaintext-only";
     cell.tabIndex = 0;
 
     cell.style.gridRow = r + 2;
@@ -148,7 +148,7 @@ function addRow(row_data) {
     cell.dir = "auto";
     cell.role = "textbox";
 
-    cell.contentEditable = true;
+    cell.contentEditable = "plaintext-only";
     cell.tabIndex = 0;
 
     cell.style.gridRow = rowIndex + 2;
@@ -192,13 +192,4 @@ CONTAINER.addEventListener("input", (e) => {
       });
     });
   }
-
-  handleCommand(cell);
 });
-
-// window.addEventListener("resize", () => {
-//   // console.log("helo");
-//   const [rows, cols] = cellsToFillScreen();
-//   console.log(rows, cols);
-//   ensureGridSize(rows, cols);
-// });1

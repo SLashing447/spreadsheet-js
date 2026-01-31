@@ -1,4 +1,3 @@
-import { clearDb } from "../scripts/db";
 import {
   applyThemeByName,
   createNewUserTheme,
@@ -6,64 +5,86 @@ import {
 } from "../scripts/theme_utils";
 import {
   exportAndDownloadFile,
-  getElementeByPos,
+  getCellByPos,
   loadFile,
   setPrintMode,
 } from "../scripts/util";
-import { generateGrid } from "./Grid";
 
 import "./styles/toolbar.css";
 import { selected_cell, setHasDataFlag } from "../scripts/values";
-import { openCSS, openFile } from "../scripts/api";
+import { openFile } from "../scripts/api";
+import { applyPluginByName, createNewUserPlugin } from "../scripts/plugins";
 
-const home_pn = document.getElementById("home-pn"); //0
-const th_pn = document.getElementById("th-pn"); // 1
+const PANNELS = [
+  document.getElementById("home-pn"), //0
+  document.getElementById("th-pn"), // 1
+  document.getElementById("pl-pn"), //2
+];
+
+// const home_pn = ; //0?
+
 let pannel = 0;
 
-document.getElementById("lf").addEventListener("click", async () => {
-  try {
-    const result = await openFile();
+// tittle bar options
+document
+  .getElementById("ttlbar-options")
+  .addEventListener("click", async (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    const id = btn.id;
 
-    if (!result) {
-      console.log("Open cancelled");
-      return;
+    switch (id) {
+      // openfile
+      case "0": {
+        try {
+          const result = await openFile();
+
+          if (!result) {
+            console.log("Open cancelled");
+            return;
+          }
+
+          await loadFile(result.data, result.name);
+        } catch (error) {
+          console.error("Open failed:", error);
+        }
+      }
+
+      //save file
+      case "1":
+        await exportAndDownloadFile();
+        break;
+      case "2":
+        setPrintMode(true);
+        break;
+      case "3":
+        changePannel(1);
+        break;
+
+      case "4":
+        changePannel(2);
+        break;
+
+      default:
+        console.log("heelow");
+        break;
     }
-
-    await loadFile(result.data, result.name);
-  } catch (error) {
-    console.error("Open failed:", error);
-  }
-});
-
-document.getElementById("wp-mem").addEventListener("click", async () => {
-  setHasDataFlag(false);
-  await clearDb();
-});
-
-document.getElementById("clr").addEventListener("click", () => {
-  generateGrid();
-});
-
-document.getElementById("prf").addEventListener("click", () => {
-  setPrintMode(true);
-});
-document.getElementById("sf").addEventListener("click", async () => {
-  await exportAndDownloadFile();
-});
+  });
 
 // decor thing
-document.querySelectorAll(".decor").forEach((el) =>
-  el.addEventListener("click", (e) => {
-    // console.log(e.id);\
-    if (!selected_cell) return;
+document.getElementById("home-btns").addEventListener("click", (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  const id = btn.id;
 
-    const cell = getElementeByPos(selected_cell[0], selected_cell[1]);
+  if (!selected_cell) return;
 
-    if (!cell) return;
+  const cell = getCellByPos(selected_cell[0], selected_cell[1]);
 
-    toggleWrap(cell, el.id);
-  })
-);
+  if (!cell) return;
+
+  toggleWrap(cell, id);
+});
 
 function toggleWrap(el, tag = "b") {
   const first = el.firstElementChild;
@@ -89,58 +110,77 @@ function toggleWrap(el, tag = "b") {
   el.appendChild(wrapper);
 }
 
-// document.getElementById("th").addEventListener("click", (e) => {});
-document.getElementById("th").addEventListener("click", () => {
-  if (pannel === 0) {
-    pannel = 1;
-    home_pn.classList.add("hidden");
-    th_pn.classList.remove("hidden");
-  }
-});
+function changePannel(to = 0) {
+  if (pannel === to) return;
 
-document.getElementById("bth").addEventListener("click", () => {
-  if (pannel === 1) {
-    pannel = 0;
+  PANNELS[pannel].classList.add("hidden");
+  PANNELS[to].classList.remove("hidden");
 
-    home_pn.classList.remove("hidden");
-    th_pn.classList.add("hidden");
-  }
-});
+  pannel = to;
+}
 
-document.getElementById("upcss").addEventListener("click", async () => {
-  const css = await openCSS();
-
-  if (css) {
-    const root = css.css;
-
-    // console.log(root);
-    createNewUserTheme(root, css.name.split(".")[0]);
-  }
-  // if (pannel === 1) {
-  //   pannel = 0;
-  //   home_pn.classList.remove("hidden");
-  //   th_pn.classList.add("hidden");
-  // }
-});
-
-document.getElementById("th-btns").addEventListener("click", async (e) => {
+// theme buttons
+document.getElementById("th-pn").addEventListener("click", async (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
 
+  if (btn.className === "bpn") {
+    changePannel(0);
+    return;
+  }
+
   const id = btn.id;
+
+  if (id === "upcss") {
+    const css = await openFile(1);
+
+    if (css) {
+      const root = css.data;
+
+      // console.log(root);
+      createNewUserTheme(root, css.name.split(".")[0]);
+      return;
+    }
+  }
 
   // console.log(id);
   await applyThemeByName(id);
 });
 
+// plugin buttons
+document.getElementById("pl-pn").addEventListener("click", async (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+
+  if (btn.className === "bpn") {
+    changePannel(0);
+    return;
+  }
+
+  const id = btn.id;
+
+  if (id === "uppl") {
+    const js = await openFile(2);
+
+    if (js) {
+      const root = js.data;
+
+      createNewUserPlugin(root, js.name.split(".")[0]);
+      return;
+    }
+  }
+
+  await applyPluginByName(id);
+});
+
+// to remove the themes
 document.getElementById("th-btns").addEventListener("mousedown", async (e) => {
   if (e.button !== 1) return;
 
   const btn = e.target.closest("button");
   if (!btn) return;
 
-  const id = btn.id;
-  if (id.split("-")[0].toLowerCase() !== "usertheme") return;
+  // if (btn.id.split("-")[0].toLowerCase() !== "usertheme") return;
 
-  await removeUserTheme(id);
+  await removeUserTheme(btn.id);
 });

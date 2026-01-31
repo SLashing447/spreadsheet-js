@@ -229,6 +229,6 @@ export function populateGrid(partialdata) {
   }
 }
 
-export function getElementeByPos(row, col) {
+export function getCellByPos(row, col) {
   return CONTAINER.querySelector(`[data-row="${row}"][data-col="${col}"]`);
 }

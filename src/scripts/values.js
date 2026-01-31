@@ -1,6 +1,8 @@
 import { formatEpoch } from "./util";
 
-const ANY_INFO = document.getElementById("info");
+const ANY_INFO1 = document.getElementById("info1");
+const ANY_INFO2 = document.getElementById("info2");
+const ANY_INFO3 = document.getElementById("info3");
 
 const FILANAME = document.getElementById("filename");
 const LS_SAVED = document.getElementById("ls-time");
@@ -15,38 +17,43 @@ export const setFileInfo = (data) => {
 };
 
 export const CONTAINER = document.getElementById("grid-container");
-let infoVersion = 0;
-let messageStack = [];
 
-export const setInfo = (msg, timeout = 0) => {
-  if (!ANY_INFO) return;
+export const setInfo = (msg, type = 1, timeout = 0) => {
+  // if (!ANY_INFO) return;
+
+  if (type === 1 && ANY_INFO1) {
+    ANY_INFO1.textContent = msg;
+  } else if (type === 2 && ANY_INFO2) {
+    ANY_INFO2.textContent = msg;
+  } else if (type === 3 && ANY_INFO3) {
+    ANY_INFO3.textContent = msg;
+  }
 
   // skip exact duplicates (top of stack)
-  const last = messageStack.at(-1);
-  if (last && last.msg === msg) return;
+  // const last = messageStack.at(-1);
+  // if (last && last.msg === msg) return;
 
-  const version = ++infoVersion;
+  // const version = ++infoVersion;
 
-  const entry = {
-    msg,
-    version,
-    prev: ANY_INFO.innerText,
-  };
+  // const entry = {
+  //   msg,
+  //   version,
+  //   prev: ANY_INFO.innerText,
+  // };
 
-  messageStack.push(entry);
-  ANY_INFO.innerText = msg;
+  // messageStack.push(entry);
 
-  if (timeout > 0) {
-    setTimeout(() => {
-      // only act if still relevant
-      if (version !== infoVersion) return;
+  // if (timeout > 0) {
+  //   setTimeout(() => {
+  //     // only act if still relevant
+  //     if (version !== infoVersion) return;
 
-      messageStack.pop();
-      const restore = messageStack.at(-1);
+  //     messageStack.pop();
+  //     const restore = messageStack.at(-1);
 
-      ANY_INFO.innerText = restore ? restore.msg : entry.prev;
-    }, timeout);
-  }
+  //     ANY_INFO.innerText = restore ? restore.msg : entry.prev;
+  //   }, timeout);
+  // }
 };
 
 export const setFileName = (name) => {

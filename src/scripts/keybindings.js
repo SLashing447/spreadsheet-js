@@ -4,7 +4,7 @@ import { decode } from "@msgpack/msgpack";
 import { handleKeyCommand } from "./commands";
 import {
   calSelArea,
-  getElementeByPos,
+  getCellByPos,
   isPrintMode,
   populateGrid,
   save_grid,
@@ -12,6 +12,7 @@ import {
 } from "./util";
 import { CONTAINER, selected_cell, setInfo } from "./values";
 import { ensureGridSize } from "../lib/Grid";
+import { handleCommand, setLiveSelectingArea } from "./plugins";
 // const CONTAINER = document.getElementById("grid-container");
 
 // wofhweofh weofweiohf iowehf owe
@@ -46,18 +47,22 @@ function selectRange(a, b) {
   const colMin = Math.min(c1, c2);
   const colMax = Math.max(c1, c2);
 
-  rng_info.innerText = `${rowMin + 1}-${colMin + 1}  ${rowMax + 1}-${
-    colMax + 1
-  }  ${calSelArea({
+  const ar = {
     row1: rowMin,
     col1: colMin,
     row2: rowMax,
     col2: colMax,
-  })}`;
+  };
+
+  rng_info.innerText = `${rowMin + 1}-${colMin + 1}  ${rowMax + 1}-${
+    colMax + 1
+  }  ${calSelArea(ar)}`;
+
+  setLiveSelectingArea(ar);
 
   for (let r = rowMin; r <= rowMax; r++) {
     for (let c = colMin; c <= colMax; c++) {
-      getElementeByPos(r, c)?.classList.add("sel");
+      getCellByPos(r, c)?.classList.add("sel");
     }
   }
 }
@@ -125,9 +130,9 @@ window.addEventListener("keydown", (e) => {
     unSelectArea();
   }
 
-  if (key === "r" && e.ctrlKey) {
-    e.preventDefault();
-  }
+  // if (key === "r" && e.ctrlKey) {
+  //   e.preventDefault();
+  // }
 
   //   ! SAVE
 
@@ -157,18 +162,29 @@ CONTAINER.addEventListener("keydown", (e) => {
 
   handleKeyCommand(e);
 
+  if (key === "enter") {
+    const text = cell.textContent;
+
+    if (text && text.startsWith("/")) {
+      e.preventDefault();
+      handleCommand(text);
+      return;
+    }
+  }
+
   if (key === "enter" && e.ctrlKey) {
     e.preventDefault();
 
-    getElementeByPos(row + 1, col)?.focus();
+    getCellByPos(row + 1, col)?.focus();
     return;
   }
 
   if (
-    key === "arrowup" ||
-    key === "arrowdown" ||
-    key === "arrowleft" ||
-    key === "arrowright"
+    (key === "arrowup" ||
+      key === "arrowdown" ||
+      key === "arrowleft" ||
+      key === "arrowright") &&
+    e.ctrlKey
   ) {
     e.preventDefault();
 
@@ -180,7 +196,7 @@ CONTAINER.addEventListener("keydown", (e) => {
     if (key === "arrowleft") c--;
     if (key === "arrowright") c++;
 
-    getElementeByPos(r, c)?.focus();
+    getCellByPos(r, c)?.focus();
 
     return;
   }
@@ -233,22 +249,3 @@ window.addEventListener("paste", async (e) => {
     setInfo("fail", 0);
   }
 });
-
-//  add zoom
-
-// CONTAINER.addEventListener(
-//   "wheel",
-//   (e) => {
-//     if (!e.ctrlKey) return; // only when Ctrl is held
-
-//     e.preventDefault(); // stop browser zoom (important)
-
-//     if (e.deltaY < 0) {
-//       ensureGridSize(e.deltaY,e)
-//       console.log("Ctrl + scroll UP");
-//     } else if (e.deltaY > 0) {
-//       console.log("Ctrl + scroll DOWN");
-//     }
-//   },
-//   { passive: false }
-// );

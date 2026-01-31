@@ -2,12 +2,12 @@
  * Open file dialog and read binary file
  * @returns {Promise<{data: Uint8Array, name: string, path: string} | null>}
  */
-export async function openFile() {
+export async function openFile(type = 0) {
   if (!window.electronAPI) {
     throw new Error("Not running in Electron");
   }
 
-  const result = await window.electronAPI.openFile();
+  const result = await window.electronAPI.openFile(type);
 
   if (result.canceled) {
     return null; // User cancelled
@@ -18,29 +18,7 @@ export async function openFile() {
   }
 
   return {
-    data: new Uint8Array(result.data),
-    name: result.name,
-    path: result.path,
-  };
-}
-
-export async function openCSS() {
-  if (!window.electronAPI) {
-    throw new Error("Not running in Electron");
-  }
-
-  const result = await window.electronAPI.openCSS();
-
-  if (result.canceled) {
-    return null; // User cancelled
-  }
-
-  if (result.error) {
-    throw new Error(`Failed to open file: ${result.error}`);
-  }
-
-  return {
-    css: result.css,
+    data: type === 0 ? new Uint8Array(result.data) : result.data,
     name: result.name,
     path: result.path,
   };
@@ -75,6 +53,45 @@ export async function saveFile(blob, defaultName = "untitled") {
   }
 
   return {
+    name: result.name,
+    path: result.path,
+  };
+}
+
+export async function writeUserData(data, name, type = "js") {
+  if (!window.electronAPI) {
+    throw new Error("Not running in Electron");
+  }
+
+  const result = await window.electronAPI.writeUserData(name, data, type);
+
+  if (result.canceled) {
+    return null; // User cancelled
+  }
+
+  if (result.error) {
+    throw new Error(`Failed to open file: ${result.error}`);
+  }
+
+  return result.path;
+}
+export async function readUserData(name, type = "js") {
+  if (!window.electronAPI) {
+    throw new Error("Not running in Electron");
+  }
+
+  const result = await window.electronAPI.readUserData(name, type);
+
+  if (result.canceled) {
+    return null; // User cancelled
+  }
+
+  if (result.error) {
+    throw new Error(`Failed to open file: ${result.error}`);
+  }
+
+  return {
+    data: result.data,
     name: result.name,
     path: result.path,
   };

@@ -115,3 +115,10 @@ button:hover {
   overflow: auto;
   padding: 0 0.5rem 0 0;
 }
+
+.tool-end {
+  max-width: 50%;
+  /* gap: 0.1rem; */
+  /* border: 1pxs solid red; */
+  height: 100%;
+}

@@ -10,13 +10,24 @@ import {
   save_grid,
   setPrintMode,
 } from "./util";
-import { CONTAINER, selected_cell, setInfo } from "./values";
-import { ensureGridSize } from "../lib/Grid";
+import {
+  CONTAINER,
+  isInteractiveMode,
+  selected_cell,
+  setIneractiveMode,
+  setInfo,
+  setSelectedCell,
+} from "./values";
+import { ensureGridSize, getGridSize } from "../lib/Grid";
 import {
   handleCommand,
-  setLiveSelectingArea,
-  triggerKeyWatcher,
-} from "./plugins";
+  // setLiveSelectingArea,
+  // triggerKeyWatcher,
+} from "./plugin/plugins";
+import {
+  triggerKeyDownForPlugin,
+  triggerSelectionChangeForPlugin,
+} from "./plugin/plugin_api";
 // const CONTAINER = document.getElementById("grid-container");
 
 // wofhweofh weofweiohf iowehf owe
@@ -52,17 +63,18 @@ function selectRange(a, b) {
   const colMax = Math.max(c1, c2);
 
   const ar = {
-    row1: rowMin,
-    col1: colMin,
-    row2: rowMax,
-    col2: colMax,
+    r1: rowMin,
+    c1: colMin,
+    r2: rowMax,
+    c2: colMax,
   };
 
   rng_info.innerText = `${rowMin + 1}-${colMin + 1}  ${rowMax + 1}-${
     colMax + 1
   }  ${calSelArea(ar)}`;
 
-  setLiveSelectingArea(ar);
+  // setLiveSelectingArea(ar);
+  triggerSelectionChangeForPlugin(ar);
 
   for (let r = rowMin; r <= rowMax; r++) {
     for (let c = colMin; c <= colMax; c++) {
@@ -85,6 +97,7 @@ CONTAINER.addEventListener("mousedown", (e) => {
   isDragging = true;
   startCell = cell;
   lastHoverCell = cell;
+  setSelectedCell([row, col]);
 
   unSelectArea();
   cell.classList.add("sel");
@@ -111,10 +124,10 @@ CONTAINER.addEventListener("mouseup", () => {
   const c2 = +lastHoverCell.dataset.col;
 
   selectedArea = {
-    row1: Math.min(r1, r2),
-    col1: Math.min(c1, c2),
-    row2: Math.max(r1, r2),
-    col2: Math.max(c1, c2),
+    r1: Math.min(r1, r2),
+    c1: Math.min(c1, c2),
+    r2: Math.max(r1, r2),
+    c2: Math.max(c1, c2),
   };
 
   isDragging = false;
@@ -124,10 +137,15 @@ CONTAINER.addEventListener("mouseup", () => {
 
 // generic listner
 window.addEventListener("keydown", (e) => {
-  triggerKeyWatcher(e);
+  // triggerKeyWatcher(e);
   const key = e.key.toLowerCase();
 
   if (key === "escape") {
+    // chec if interacitver
+    if (isInteractiveMode) {
+      setIneractiveMode(false);
+    }
+
     if (isPrintMode) {
       setPrintMode(false);
     }
@@ -167,6 +185,11 @@ CONTAINER.addEventListener("keydown", (e) => {
 
   handleKeyCommand(e);
 
+  triggerKeyDownForPlugin(e);
+
+  // 2. Your normal app logic...
+  if (e.defaultPrevented) return; // If a plugin blocked it, stop.
+
   if (key === "enter") {
     const text = cell.textContent;
 
@@ -177,10 +200,35 @@ CONTAINER.addEventListener("keydown", (e) => {
     }
   }
 
+  //directly go to next row at 0
+  if (key === "tab" && e.ctrlKey) {
+    e.preventDefault();
+    setSelectedCell([row + 1, 0]);
+    getCellByPos(row + 1, 0)?.focus();
+    return;
+  }
+
+  if (key === "tab") {
+    e.preventDefault();
+    if (getGridSize()[1] === col + 1) {
+      setSelectedCell([row + 1, 0]);
+      getCellByPos(row + 1, 0)?.focus();
+      return;
+    }
+
+    setSelectedCell([row, col + 1]);
+    getCellByPos(row, col + 1)?.focus();
+
+    // console.log(selected_cell);
+  }
+
+  // go to row below
   if (key === "enter" && e.ctrlKey) {
     e.preventDefault();
 
     getCellByPos(row + 1, col)?.focus();
+    setSelectedCell([row + 1, col]);
+
     return;
   }
 
@@ -202,6 +250,7 @@ CONTAINER.addEventListener("keydown", (e) => {
     if (key === "arrowright") c++;
 
     getCellByPos(r, c)?.focus();
+    setSelectedCell([r, c]);
 
     return;
   }
@@ -220,7 +269,6 @@ window.addEventListener("paste", async (e) => {
     }
 
     // Looks like binary - prevent showing it
-    e.preventDefault();
 
     // Show loading immediately
     // setInfo("Decoding...", 0);
@@ -230,30 +278,33 @@ window.addEventListener("paste", async (e) => {
       text.split(",").map((n) => {
         const v = Number(n);
         if (v < 0 || v > 255 || Number.isNaN(v)) {
-          throw new Error("Invalid byte");
+          return;
         }
         return v;
       })
     );
 
+    e.preventDefault();
     const data = decode(bytes);
-
-    console.log(data.data);
 
     // Check if it's our clipboard data
     if (data.type !== "clipboard") {
-      throw new Error("Not clipboard data");
+      return;
     }
+    console.log(data.data);
 
     // Add delay before populating (user sees "Decoding...")
     // await new Promise((resolve) => setTimeout(resolve, 150));
 
     populateGrid(data.data);
+    save_grid();
     setInfo("Pasted ✓", 1);
-  } catch(e) {
-    console.log(e)
+  } catch (e) {
+    console.log(e);
     // Not our format or decode failed - allow default paste
     // (but we already prevented, so clear and do nothing)
     setInfo("fail", 1);
   }
 });
+
+// auto save

@@ -1,7 +1,14 @@
-import { decode, encode } from "@msgpack/msgpack";
-import { THEMES } from "../../styles/themes/THEMES";
+// import { decode, encode } from "@msgpack/msgpack";
+
+/**
+ * Several Utils of theme and to load theme , and setup stuff lol
+ */
+
+import { THEMES } from "../../resources/themes/THEMES";
+
 import { getDbItem, removeDbItem, setDbItem } from "./db";
 import { readUserData, writeUserData } from "./api";
+import { setExtrasInfo, setInfo } from "./values";
 
 function applyTheme(rootCSS) {
   let style = document.getElementById("theme");
@@ -52,6 +59,9 @@ export async function loadTheme() {
 
     fth = "DARK";
   }
+  // setExtrasInfo(`Plugins : ${loaded_plug}/${plugins.length}`, 0);
+  console.log(fth);
+  setExtrasInfo(`Theme : ${fth.toLowerCase()}`, 1);
 
   const th_btns = document.getElementById("th-btns");
   for (const key of Object.keys(THEMES)) {
@@ -107,6 +117,7 @@ export async function createNewUserTheme(_rootCSS, name) {
   btn.classList.add("sel");
 
   document.getElementById("th-btns").appendChild(btn);
+  setExtrasInfo(`Theme : ${name.toLowerCase()}`, 1);
 
   // apply raw theme
   applyTheme(rootCSS);
@@ -119,6 +130,8 @@ export async function applyThemeByName(name) {
 
   if (th === null || th !== name) {
     const themeName = name.split("-")[1];
+    setExtrasInfo(`Theme : ${themeName.toLowerCase()}`, 1);
+
     if (name.split("-")[0] === "usertheme") {
       // fetch rootcss from
 

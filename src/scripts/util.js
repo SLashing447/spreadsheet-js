@@ -14,7 +14,7 @@ import {
 } from "./values";
 import { selectedArea } from "./keybindings";
 import { saveFile } from "./api";
-import { THEMES } from "../../styles/themes/THEMES";
+import { THEMES } from "../../resources/themes/THEMES";
 
 export function cellsToFillScreen(cellWidth = 80, cellHeight = 38) {
   const screenWidth = window.innerWidth;
@@ -61,7 +61,7 @@ export async function save_grid() {
     await setDbItem("ls", now);
     setHasDataFlag(true);
 
-    setInfo("Saved 💾");
+    setInfo("All Changes Saved");
   } else {
     return -1;
   }
@@ -205,12 +205,14 @@ export async function loadFile(buf, fileName) {
 export function calSelArea(ar) {
   const arr = ar ?? selectedArea;
   if (!arr) return 0;
-  return (arr.row2 - arr.row1 + 1) * (1 + arr.col2 - arr.col1);
+  return (arr.r2 - arr.r1 + 1) * (1 + arr.c2 - arr.c1);
 }
 
 export function populateGrid(partialdata) {
   // console.log(selectedArea)
   if (!selected_cell) return;
+  // console.log(selected_cell)
+
   const row = selected_cell[0];
   const col = selected_cell[1];
 
@@ -233,4 +235,29 @@ export function populateGrid(partialdata) {
 
 export function getCellByPos(row, col) {
   return CONTAINER.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+}
+
+// sanitize grid
+export function setCellContent(cell, value) {
+  if (value == null) return;
+
+  const allowed = ["B", "I", "U", "H"];
+
+  const template = document.createElement("template");
+  template.innerHTML = value;
+
+  const walker = document.createTreeWalker(
+    template.content,
+    NodeFilter.SHOW_ELEMENT
+  );
+
+  let node;
+  while ((node = walker.nextNode())) {
+    if (!allowed.includes(node.tagName)) {
+      node.replaceWith(...node.childNodes);
+    }
+  }
+
+  cell.innerHTML = "";
+  cell.appendChild(template.content);
 }

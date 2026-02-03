@@ -13,7 +13,10 @@ import {
 import "./styles/toolbar.css";
 import { selected_cell, setHasDataFlag } from "../scripts/values";
 import { openFile } from "../scripts/api";
-import { applyPluginByName, createNewUserPlugin } from "../scripts/plugins";
+import {
+  applyPluginByName,
+  createNewUserPlugin,
+} from "../scripts/plugin/plugins";
 import { generateGrid } from "./Grid";
 
 const PANNELS = [
@@ -166,17 +169,19 @@ document.getElementById("pl-pn").addEventListener("click", async (e) => {
   const id = btn.id;
 
   if (id === "uppl") {
-    const js = await openFile(2);
+    // just ship with std
+    return;
+    // const js = await openFile(2);
 
-    if (js) {
-      const root = js.data;
+    // if (js) {
+    //   const root = js.data;
 
-      createNewUserPlugin(root, js.name.split(".")[0]);
-      return;
-    }
+    //   createNewUserPlugin(root, js.name.split(".")[0]);
+    //   return;
+    // }
   }
 
-  await applyPluginByName(id);
+  // await applyPluginByName(id);
 });
 
 // to remove the themes

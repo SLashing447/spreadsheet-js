@@ -3,7 +3,7 @@ import { exportSelectedData } from "./extract";
 import { selectedArea, unSelectArea } from "./keybindings";
 import { CONTAINER, setInfo } from "./values";
 import { calSelArea, getCellByPos } from "./util";
-import { handleCommand } from "./plugins";
+import { handleCommand } from "./plugin/plugins";
 
 export function handleKeyCommand(e) {
   const key = e.key.toLowerCase();
@@ -22,10 +22,13 @@ export function handleKeyCommand(e) {
   }
 
   if (key === "c" && e.ctrlKey) {
+    const dataToWrite = exportSelectedData();
+    if (!dataToWrite) return;
+
     navigator.clipboard.writeText(
       encode({
         type: "clipboard",
-        data: exportSelectedData(),
+        data: dataToWrite,
       })
     );
     unSelectArea();
@@ -53,18 +56,18 @@ export function rmSelectedData(ar) {
   if (area === 0 || area === 1) return;
 
   const cellMap = new Map();
-  const { row1, row2, col1, col2 } = sel;
+  const { r1, r2, c1, c2 } = sel;
 
   CONTAINER.querySelectorAll("[data-row][data-col]").forEach((cell) => {
     cellMap.set(`${cell.dataset.row},${cell.dataset.col}`, cell);
   });
 
   // later
-  for (let r = row1; r <= row2; r++) {
-    for (let c = col1; c <= col2; c++) {
+  for (let r = r1; r <= r2; r++) {
+    for (let c = c1; c <= c2; c++) {
       const cell = cellMap.get(`${r},${c}`);
       if (!cell) continue;
-      cell.innerHTML = "";
+      cell.textContent = "";
     }
   }
 

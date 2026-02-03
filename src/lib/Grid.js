@@ -1,6 +1,6 @@
 // This file will generate the required grids
 // import { handleCommand } from "../scripts/commands";
-import { cellsToFillScreen } from "../scripts/util";
+import { cellsToFillScreen, save_grid, setCellContent } from "../scripts/util";
 import { CONTAINER } from "../scripts/values";
 import "./styles/Grid.css";
 // import "./keybindings";
@@ -8,13 +8,11 @@ import "./styles/Grid.css";
 let GRID_ROWS = 0;
 let GRID_COLS = 0;
 
-let GRID_DATA = null;
-
 export function ensureGridSize(row, col) {
   while (GRID_ROWS <= row) addRow();
   while (GRID_COLS <= col) addColumn();
 
-  console.log("Size changed new sizes are : ", GRID_COLS, GRID_ROWS);
+  // console.log("Size changed new sizes are : ", GRID_COLS, GRID_ROWS);
 }
 
 export function getGridSize() {
@@ -124,10 +122,6 @@ function addColumn() {
     cell.style.gridRow = r + 2;
     cell.style.gridColumn = colIndex + 2;
 
-    if (GRID_DATA?.[r]?.[colIndex] != null) {
-      cell.textContent = GRID_DATA[r][colIndex];
-    }
-
     CONTAINER.appendChild(cell);
   }
 
@@ -164,7 +158,8 @@ function addRow(row_data) {
     // console.log(GRID_DATA?.[rowIndex][0], rowIndex);
     try {
       if (row_data && row_data[c] !== undefined) {
-        cell.textContent = row_data[c]; // Use textContent, not innerHTML for safety
+        setCellContent(cell, row_data[c]);
+        // cell.innerHTML = row_data[c]; // Use textContent, not innerHTML for safety
       }
     } catch (_) {
       throw new Error("Error reading data : ", GRID_DATA[rowIndex]);
@@ -174,9 +169,25 @@ function addRow(row_data) {
   }
 }
 
+let saveTimeout;
+
+function triggerAutoSave() {
+  // Clear the previous timer (reset the clock)
+  clearTimeout(saveTimeout);
+
+  // Update UI to show "Unsaved changes..."
+
+  // Set a new timer for 1 or 2 seconds
+  saveTimeout = setTimeout(() => {
+    save_grid();
+  }, 1000); // 1000ms delay
+}
+
 CONTAINER.addEventListener("input", (e) => {
   const cell = e.target.closest(".cell");
   if (!cell) return;
+
+  triggerAutoSave();
 
   const row = +cell.dataset.row;
 

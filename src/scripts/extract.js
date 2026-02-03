@@ -1,5 +1,6 @@
 import { getGridSize } from "../lib/Grid";
 import { selectedArea } from "./keybindings";
+import { calSelArea } from "./util";
 import { CONTAINER } from "./values";
 export function sanitize() {
   const cells = document.querySelectorAll(".cell");
@@ -57,8 +58,10 @@ export function sanitize() {
  * Returns msgpack ecnoding of selected string[][]
  */
 export function exportSelectedData() {
+  if (calSelArea() === 0) return;
+
   const cellMap = new Map();
-  const { row1, row2, col1, col2 } = selectedArea;
+  const { r1, r2, c1, c2 } = selectedArea;
 
   CONTAINER.querySelectorAll("[data-row][data-col]").forEach((cell) => {
     cellMap.set(`${cell.dataset.row},${cell.dataset.col}`, cell);
@@ -66,9 +69,9 @@ export function exportSelectedData() {
 
   const data = [];
 
-  for (let r = row1; r <= row2; r++) {
+  for (let r = r1; r <= r2; r++) {
     const row = [];
-    for (let c = col1; c <= col2; c++) {
+    for (let c = c1; c <= c2; c++) {
       const cell = cellMap.get(`${r},${c}`);
       row.push(cell ? cell.textContent : "");
     }

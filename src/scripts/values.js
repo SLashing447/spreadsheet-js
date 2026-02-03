@@ -1,8 +1,25 @@
+import { clearIntModeListerners } from "./plugin/plugin_api";
 import { formatEpoch } from "./util";
 
-const ANY_INFO1 = document.getElementById("info1");
-const ANY_INFO2 = document.getElementById("info2");
-const ANY_INFO3 = document.getElementById("info3");
+const INFO = [
+  document.getElementById("info1"),
+  document.getElementById("info2"),
+];
+
+// pluggin is using the keyboard/mouse events
+export let isInteractiveMode = false;
+
+export function setIneractiveMode(m) {
+  if (m) isInteractiveMode = m;
+  else isInteractiveMode = !isInteractiveMode;
+
+  if (m === false) {
+    // clear listners
+    clearIntModeListerners();
+  }
+}
+
+const extras_info = document.getElementById("extras");
 
 const FILANAME = document.getElementById("filename");
 const LS_SAVED = document.getElementById("ls-time");
@@ -18,15 +35,18 @@ export const setFileInfo = (data) => {
 
 export const CONTAINER = document.getElementById("grid-container");
 
-export const setInfo = (msg, type = 1, timeout = 0) => {
-  // if (!ANY_INFO) return;
+export const setExtrasInfo = (msg, type = 0) => {
+  let data = extras_info.textContent.split("|");
+  data[type] = msg;
+  extras_info.textContent = data.join(" | ");
+};
 
-  if (type === 1 && ANY_INFO1) {
-    ANY_INFO1.textContent = msg;
-  } else if (type === 2 && ANY_INFO2) {
-    ANY_INFO2.textContent = msg;
-  } else if (type === 3 && ANY_INFO3) {
-    ANY_INFO3.textContent = msg;
+// to put toast
+export const setInfo = (msg, type = 0, setType = "s") => {
+  if (setType === "s") {
+    INFO[type].textContent = msg;
+  } else if (setType === "p") {
+    INFO[type].textContent = ANY_INFO[type].textContent + msg;
   }
 };
 
@@ -57,11 +77,6 @@ export const getHasDataFlag = () => {
 
 export let selected_cell = [];
 
-CONTAINER.addEventListener("mousedown", (e) => {
-  const cell = e.target.closest(".cell");
-  if (!cell) return;
-
-  // const row = ;??
-
-  selected_cell = [+cell.dataset.row, +cell.dataset.col];
-});
+export function setSelectedCell(cell) {
+  selected_cell = cell;
+}

@@ -10,7 +10,8 @@ import {
   getHasDataFlag,
 } from "./scripts/values";
 import { loadTheme } from "./scripts/theme";
-import { loadAllPluginsOnStartup } from "./scripts/plugins";
+import { loadAllPluginsOnStartup } from "./scripts/plugin/plugins";
+// import { loadAllPluginsOnStartup } from "./scripts/plugins";
 // import { loadTheme } from "./scripts/util";
 
 // Wrap your initialization
@@ -24,6 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function init() {
   // load theme
+
   await loadTheme();
   await loadAllPluginsOnStartup();
 
@@ -36,7 +38,7 @@ async function init() {
     setFileName(fName);
     setLsTime(ls);
 
-    setInfo("Welcome!!");
+    // setInfo("Welcome!!");
 
     const data = decode(_data);
 

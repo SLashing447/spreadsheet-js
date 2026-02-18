@@ -1,18 +1,34 @@
 {
-  "name": "electron",
+  "name": "spreadsheet-js",
   "version": "1.0.0",
-  "description": "",
+  "description": "Spreadsheet js app",
   "main": "index.js",
-  "scripts": {
-      "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
- 
-
-  "keywords": [],
-  "author": "",
+  "author": "an",
   "license": "ISC",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "build": "electron-builder"
+  },
   "devDependencies": {
-    "electron": "^40.1.0"
+    "electron": "^40.4.1",
+    "electron-builder": "^26.7.0"
+  },
+  "build": {
+    "appId": "com.mycompany.spreadsheet",
+    "productName": "spreadsheet-js",
+    "files": [
+      "index.js",
+      "preload.js",
+      "package.json",
+      "renderer/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "./icon.png"
+    }
   }
 }

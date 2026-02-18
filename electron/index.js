@@ -5,20 +5,39 @@ const path = require("path");
 let mainWindow;
 
 function createWindow() {
+  const isDev = !app.isPackaged;
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     frame: false,
+    center: true,
+    show: false,
+    icon: path.join(__dirname, "icon.png"), // works in dev & pack
+
     autoHideMenuBar: true,
     webPreferences: {
+      sandbox: true,
+      devTools: isDev, // dev tools only in development
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
 
-  mainWindow.loadURL("http://localhost:5173");
-  mainWindow.webContents.openDevTools();
+  if (isDev) {
+    mainWindow.loadURL("http://localhost:5173");
+  } else {
+    mainWindow.loadFile(path.join(__dirname, "../dist/index.html"));
+  }
+  mainWindow.setMenu(null);
+
+  mainWindow.maximize();
+  mainWindow.show();
+
+  if (isDev) {
+    mainWindow.webContents.openDevTools();
+  }
 }
 
 app.whenReady().then(async () => {

@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "Spreadsheet js app",
   "main": "index.js",
-  "author": "an",
+  "author": "An",
   "license": "ISC",
+  "private": true,
   "scripts": {
     "start": "electron .",
-    "dev": "electron .",
     "build": "electron-builder"
   },
   "devDependencies": {
@@ -18,17 +18,21 @@
     "appId": "com.mycompany.spreadsheet",
     "productName": "spreadsheet-js",
     "files": [
-      "index.js",
-      "preload.js",
-      "package.json",
-      "renderer/**/*"
+      "dist/**/*",
+      "main.js",
+      "package.json"
     ],
     "directories": {
       "buildResources": "assets"
     },
     "win": {
       "target": "nsis",
-      "icon": "./icon.png"
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false
     }
   }
 }
